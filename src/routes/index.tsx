@@ -74,6 +74,7 @@ function writeReasonCache(c: ReasonCache) {
 
 export const Route = createFileRoute("/")({
   component: Dashboard,
+  validateSearch: zodValidator(searchSchema),
   head: () => ({
     meta: [
       { title: "StyleMatch — Discover Your Perfect Style" },
