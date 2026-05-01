@@ -10,7 +10,47 @@ import {
   getSavedPreferences,
   type StylePreferences,
 } from "@/components/StyleQuiz";
+import { generateRecommendationReasons } from "@/server/recommendations.functions";
 import { Sparkles } from "lucide-react";
+
+const REASON_CACHE_KEY = "stylematch:reasons";
+const REASON_TTL_MS = 60 * 60 * 1000; // 1 hour
+
+type ReasonCache = {
+  prefsHash: string;
+  ts: number;
+  reasons: Record<string, string>;
+};
+
+function hashPrefs(p: StylePreferences): string {
+  return JSON.stringify({
+    v: p.vibe,
+    c: [...(p.colors ?? [])].sort(),
+    p: p.priceRange,
+    f: p.fit,
+  });
+}
+
+function readReasonCache(): ReasonCache | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = localStorage.getItem(REASON_CACHE_KEY);
+    if (!raw) return null;
+    const c = JSON.parse(raw) as ReasonCache;
+    if (Date.now() - c.ts > REASON_TTL_MS) return null;
+    return c;
+  } catch {
+    return null;
+  }
+}
+
+function writeReasonCache(c: ReasonCache) {
+  try {
+    localStorage.setItem(REASON_CACHE_KEY, JSON.stringify(c));
+  } catch {
+    /* ignore */
+  }
+}
 
 export const Route = createFileRoute("/")({
   component: Dashboard,
