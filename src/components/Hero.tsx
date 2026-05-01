@@ -1,60 +1,102 @@
-import { ArrowRight, Sparkles, ListChecks, ShoppingBag } from "lucide-react";
+import { ArrowRight, Sparkles, ListChecks, ShoppingBag, Star } from "lucide-react";
 import heroImg from "@/assets/hero.jpg";
 
 export function Hero({ onStartQuiz }: { onStartQuiz?: () => void }) {
   return (
     <>
-      <section className="border-b border-border">
-        <div className="mx-auto grid max-w-7xl grid-cols-1 gap-12 px-6 py-16 md:px-10 md:py-24 lg:grid-cols-[1.05fr_1fr] lg:items-center lg:gap-16">
-          <div className="order-2 lg:order-1">
-            <p className="mb-6 text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
-              AI-Powered Recommendations
+      <section className="relative overflow-hidden border-b border-border">
+        {/* Background image — full bleed, dimmed for legibility */}
+        <div className="absolute inset-0 -z-10">
+          <img
+            src={heroImg}
+            alt=""
+            aria-hidden="true"
+            className="h-full w-full object-cover object-[center_30%] opacity-70"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/85 to-background/30" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background/40" />
+        </div>
+
+        <div className="mx-auto grid min-h-[78vh] max-w-7xl grid-cols-1 items-center gap-12 px-6 py-24 md:px-10 md:py-32 lg:grid-cols-[1.15fr_1fr]">
+          <div className="relative z-10">
+            <p className="mb-7 inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/40 px-3 py-1.5 text-[11px] font-medium uppercase tracking-[0.2em] text-muted-foreground backdrop-blur">
+              <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+              AI Stylist · Quiet Luxury
             </p>
-            <h1 className="text-foreground">
-              Find Your Style,<br />Instantly.
+            <h1 className="text-foreground" style={{ fontSize: "clamp(2.75rem, 6vw, 5rem)", lineHeight: 1.02, letterSpacing: "-0.035em" }}>
+              Discover Your<br />
+              <span className="italic font-light text-primary">Signature Style</span>
             </h1>
             <p className="mt-8 max-w-xl text-lg leading-relaxed text-muted-foreground">
-              StyleMatch learns your taste in 60 seconds, then quietly curates
-              pieces that feel like they were made for you. No noise. No
-              guesswork. Just the right things.
+              AI learns your taste in 60 seconds and curates perfect pieces — no
+              noise, just matches you'll actually wear.
             </p>
-            <div className="mt-10 flex flex-wrap items-center gap-3">
+            <div className="mt-10 flex flex-wrap items-center gap-4">
               <button
                 onClick={onStartQuiz}
-                className="group inline-flex h-12 items-center gap-2 rounded-sm bg-foreground px-6 text-sm font-medium text-background transition-all hover:opacity-90 active:scale-[0.98]"
+                className="sm-glow group inline-flex h-14 items-center gap-2.5 rounded-2xl bg-gradient-gold px-7 text-[15px] font-medium text-primary-foreground transition-all hover:scale-[1.02] active:scale-[0.98]"
               >
-                Start Shopping
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" strokeWidth={1.75} />
+                <Sparkles className="h-4 w-4" strokeWidth={2} />
+                Start Style Quiz
+                <span className="ml-1 rounded-full bg-background/20 px-2 py-0.5 text-[11px] font-medium">60 sec</span>
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" strokeWidth={2} />
               </button>
               <a
                 href="#how-it-works"
-                className="inline-flex h-12 items-center px-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                className="inline-flex h-14 items-center px-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
               >
-                How it works
+                How it works →
               </a>
+            </div>
+
+            {/* Trust bar */}
+            <div className="mt-14 flex flex-wrap items-center gap-x-8 gap-y-4 border-t border-border/60 pt-7">
+              <div className="flex items-center gap-2.5">
+                <div className="flex -space-x-2">
+                  {[
+                    "linear-gradient(135deg,#A8845A,#5C6240)",
+                    "linear-gradient(135deg,#5E2A2E,#2A2A2C)",
+                    "linear-gradient(135deg,#D8C9B0,#A8CABA)",
+                  ].map((bg, i) => (
+                    <span
+                      key={i}
+                      className="h-7 w-7 rounded-full border-2 border-background"
+                      style={{ background: bg }}
+                    />
+                  ))}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  <span className="font-medium text-foreground">12,000+</span> style lovers
+                </p>
+              </div>
+              <div className="flex items-center gap-1.5">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Star key={i} className="h-3.5 w-3.5 fill-primary text-primary" />
+                ))}
+                <span className="ml-1 text-xs text-muted-foreground">
+                  <span className="font-medium text-foreground">4.9</span> · 2,400 reviews
+                </span>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                <span className="font-medium text-foreground">98%</span> match accuracy
+              </p>
             </div>
           </div>
 
-          <div className="order-1 lg:order-2">
-            <div className="relative aspect-[4/5] w-full overflow-hidden rounded-sm bg-secondary">
-              <img
-                src={heroImg}
-                alt="A model in considered, neutral-toned tailoring — the StyleMatch aesthetic"
-                width={1536}
-                height={1280}
-                className="h-full w-full object-cover"
-              />
-              <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between rounded-sm bg-background/90 px-4 py-3 backdrop-blur md:bottom-6 md:left-6 md:right-6">
-                <div className="min-w-0">
-                  <p className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-                    Editor's pick
+          {/* Floating stat card */}
+          <div className="relative z-10 hidden lg:block">
+            <div className="ml-auto w-fit rounded-2xl border border-border/60 bg-card/70 p-5 shadow-luxe backdrop-blur-md">
+              <div className="flex items-center justify-between gap-8">
+                <div>
+                  <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+                    Today's pick
                   </p>
-                  <p className="mt-1 truncate text-sm font-medium text-foreground">
+                  <p className="mt-1.5 text-sm font-medium text-foreground">
                     The Quiet Tailoring Edit
                   </p>
                 </div>
-                <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-confidence-soft px-2.5 py-1 text-[11px] font-medium text-confidence">
-                  <span className="h-1.5 w-1.5 rounded-full bg-confidence" />
+                <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-gold-soft px-2.5 py-1 text-[11px] font-medium text-gold">
+                  <span className="h-1.5 w-1.5 rounded-full bg-gold" />
                   98% match
                 </span>
               </div>
@@ -93,7 +135,7 @@ function HowItWorks() {
   return (
     <section
       id="how-it-works"
-      className="scroll-mt-20 border-b border-border bg-secondary/40"
+      className="scroll-mt-20 border-b border-border bg-card/30"
     >
       <div className="mx-auto max-w-7xl px-6 py-20 md:px-10 md:py-24">
         <div className="mb-14 max-w-2xl">
@@ -109,14 +151,14 @@ function HowItWorks() {
             return (
               <li
                 key={s.label}
-                className="group relative flex flex-col gap-5 border-t border-border pt-8 transition-colors hover:border-foreground"
+                className="group relative flex flex-col gap-5 rounded-2xl border border-border bg-background/40 p-7 transition-all hover:-translate-y-1 hover:border-primary/40 hover:shadow-glow"
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+                  <span className="text-[11px] font-medium uppercase tracking-[0.18em] text-primary">
                     {s.label}
                   </span>
                   <Icon
-                    className="h-4 w-4 text-muted-foreground transition-colors group-hover:text-foreground"
+                    className="h-4 w-4 text-muted-foreground transition-colors group-hover:text-primary"
                     strokeWidth={1.5}
                   />
                 </div>
