@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
 import { ProductCard, type Product } from "@/components/ProductCard";
+import { AIStylistButton } from "@/components/AIStylistButton";
 import { EmptyState } from "@/components/EmptyState";
 import {
   StyleQuiz,
@@ -257,7 +258,7 @@ function Dashboard() {
   const totalCount = filtered?.length ?? 0;
 
   return (
-    <div className="sm-page-enter min-h-screen bg-background text-foreground">
+    <div className="sm-page-enter sm-grain min-h-screen bg-background text-foreground">
       <Navbar />
       <main>
         <Hero onStartQuiz={() => setQuizOpen(true)} />
@@ -338,10 +339,13 @@ function Dashboard() {
 
             <div>
               {items === null ? (
-                <div className="grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
-                  {Array.from({ length: 6 }).map((_, i) => (
-                    <div key={i} className="flex flex-col gap-4">
-                      <div className="sm-shimmer aspect-[4/5] rounded-sm" />
+                <div className="columns-1 gap-6 sm:columns-2 xl:columns-3">
+                  {Array.from({ length: 8 }).map((_, i) => (
+                    <div key={i} className="mb-6 flex break-inside-avoid flex-col gap-4">
+                      <div
+                        className="sm-shimmer rounded-2xl"
+                        style={{ aspectRatio: i % 3 === 0 ? "3/4" : i % 3 === 1 ? "4/5" : "5/6" }}
+                      />
                       <div className="sm-shimmer h-3 w-1/3 rounded-sm" />
                       <div className="sm-shimmer h-4 w-2/3 rounded-sm" />
                     </div>
@@ -356,7 +360,7 @@ function Dashboard() {
                     }}
                   />
                 ) : (
-                  <div className="flex flex-col items-center justify-center gap-4 rounded-sm border border-dashed border-border py-20 text-center">
+                  <div className="flex flex-col items-center justify-center gap-4 rounded-2xl border border-dashed border-border py-20 text-center">
                     <p className="text-sm text-foreground">No pieces match your filters.</p>
                     <button
                       onClick={() => setFilters(DEFAULT_FILTERS)}
@@ -367,7 +371,7 @@ function Dashboard() {
                   </div>
                 )
               ) : (
-                <div className="grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
+                <div className="columns-1 gap-6 sm:columns-2 xl:columns-3">
                   {items.map((p, i) => (
                     <Link
                       key={p.id}
@@ -412,6 +416,7 @@ function Dashboard() {
           }
         }}
       />
+      <AIStylistButton />
     </div>
   );
 }
