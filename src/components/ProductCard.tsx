@@ -23,6 +23,8 @@ export function ProductCard({
   reasonLoading?: boolean;
 }) {
   const confidence = product.confidence ?? Math.round(78 + Math.random() * 20);
+  const { isSaved, toggle } = useSavedItems();
+  const saved = isSaved(product.id);
   return (
     <article className="group flex flex-col">
       <div className="relative aspect-[4/5] overflow-hidden rounded-sm bg-secondary">
