@@ -260,7 +260,7 @@ function Dashboard() {
     <div className="sm-page-enter min-h-screen bg-background text-foreground">
       <Navbar />
       <main>
-        <Hero />
+        <Hero onStartQuiz={() => setQuizOpen(true)} />
 
         <section className="mx-auto max-w-7xl px-6 py-16 md:px-10 md:py-20">
           <div className="mb-10 flex items-end justify-between gap-6">
