@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { z } from "zod";
@@ -260,7 +260,7 @@ function Dashboard() {
     <div className="sm-page-enter min-h-screen bg-background text-foreground">
       <Navbar />
       <main>
-        <Hero />
+        <Hero onStartQuiz={() => setQuizOpen(true)} />
 
         <section className="mx-auto max-w-7xl px-6 py-16 md:px-10 md:py-20">
           <div className="mb-10 flex items-end justify-between gap-6">
@@ -369,14 +369,20 @@ function Dashboard() {
               ) : (
                 <div className="grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
                   {items.map((p, i) => (
-                    <ProductCard
+                    <Link
                       key={p.id}
-                      product={p}
-                      reason={reasons[p.id]}
-                      reasonLoading={
-                        !!prefs && i < 6 && reasonsLoading && !reasons[p.id]
-                      }
-                    />
+                      to="/products/$productId"
+                      params={{ productId: p.id }}
+                      className="block"
+                    >
+                      <ProductCard
+                        product={p}
+                        reason={reasons[p.id]}
+                        reasonLoading={
+                          !!prefs && i < 6 && reasonsLoading && !reasons[p.id]
+                        }
+                      />
+                    </Link>
                   ))}
                 </div>
               )}
