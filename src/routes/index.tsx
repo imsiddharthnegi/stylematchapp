@@ -88,6 +88,8 @@ function Dashboard() {
   const [prefs, setPrefs] = useState<StylePreferences | null>(null);
   const [quizOpen, setQuizOpen] = useState(false);
   const [showEmpty, setShowEmpty] = useState(false);
+  const [reasons, setReasons] = useState<Record<string, string>>({});
+  const [reasonsLoading, setReasonsLoading] = useState(false);
 
   useEffect(() => {
     setPrefs(getSavedPreferences());
@@ -105,6 +107,55 @@ function Dashboard() {
       .map((p) => ({ ...p, confidence: scoreProduct(p, prefs) }))
       .sort((a, b) => (b.confidence ?? 0) - (a.confidence ?? 0));
   }, [products, prefs]);
+
+  // Fetch AI reasons for top 6 personalized products, with 1h cache.
+  useEffect(() => {
+    if (!prefs || !personalized || personalized.length === 0) return;
+    const top = personalized.slice(0, 6);
+    const prefsHash = hashPrefs(prefs);
+    const cached = readReasonCache();
+    if (cached && cached.prefsHash === prefsHash) {
+      const haveAll = top.every((p) => p.id in cached.reasons);
+      if (haveAll) {
+        setReasons(cached.reasons);
+        return;
+      }
+    }
+
+    let cancelled = false;
+    setReasonsLoading(true);
+    generateRecommendationReasons({
+      data: {
+        preferences: {
+          vibe: prefs.vibe,
+          colors: prefs.colors,
+          priceRange: prefs.priceRange,
+          fit: prefs.fit,
+        },
+        products: top.map((p) => ({
+          id: p.id,
+          name: p.name,
+          category: p.category,
+          price: p.price,
+        })),
+      },
+    })
+      .then((res) => {
+        if (cancelled) return;
+        const map: Record<string, string> = {};
+        for (const r of res.reasons) if (r.reason) map[r.id] = r.reason;
+        setReasons(map);
+        writeReasonCache({ prefsHash, ts: Date.now(), reasons: map });
+      })
+      .catch((err) => console.warn("[reasons]", err))
+      .finally(() => {
+        if (!cancelled) setReasonsLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [prefs, personalized]);
 
   const items = showEmpty ? [] : personalized;
 
