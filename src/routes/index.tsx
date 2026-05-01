@@ -1,10 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
 import { ProductCard, type Product } from "@/components/ProductCard";
 import { EmptyState } from "@/components/EmptyState";
+import {
+  StyleQuiz,
+  getSavedPreferences,
+  type StylePreferences,
+} from "@/components/StyleQuiz";
+import { Sparkles } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   component: Dashboard,
@@ -20,11 +26,31 @@ export const Route = createFileRoute("/")({
   }),
 });
 
+function scoreProduct(p: Product, prefs: StylePreferences): number {
+  let score = 70;
+  const [min, max] = prefs.priceRange;
+  if (p.price >= min && p.price <= max) score += 18;
+  else {
+    const dist = p.price < min ? min - p.price : p.price - max;
+    score -= Math.min(35, dist / 8);
+  }
+  if (prefs.vibe && p.category?.toLowerCase().includes(prefs.vibe.toLowerCase()))
+    score += 6;
+  if (p.rating) score += Math.min(8, p.rating * 1.5);
+  // tiny variance for visual diversity, deterministic per id
+  const seed = p.id.charCodeAt(0) + p.id.charCodeAt(p.id.length - 1);
+  score += (seed % 7) - 3;
+  return Math.max(40, Math.min(99, Math.round(score)));
+}
+
 function Dashboard() {
   const [products, setProducts] = useState<Product[] | null>(null);
+  const [prefs, setPrefs] = useState<StylePreferences | null>(null);
+  const [quizOpen, setQuizOpen] = useState(false);
   const [showEmpty, setShowEmpty] = useState(false);
 
   useEffect(() => {
+    setPrefs(getSavedPreferences());
     supabase
       .from("products")
       .select("id,name,price,image_url,category,rating")
@@ -32,7 +58,15 @@ function Dashboard() {
       .then(({ data }) => setProducts((data as Product[]) ?? []));
   }, []);
 
-  const items = showEmpty ? [] : products;
+  const personalized = useMemo<Product[] | null>(() => {
+    if (!products) return null;
+    if (!prefs) return products;
+    return [...products]
+      .map((p) => ({ ...p, confidence: scoreProduct(p, prefs) }))
+      .sort((a, b) => (b.confidence ?? 0) - (a.confidence ?? 0));
+  }, [products, prefs]);
+
+  const items = showEmpty ? [] : personalized;
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -43,17 +77,28 @@ function Dashboard() {
         <section className="mx-auto max-w-7xl px-6 py-16 md:px-10 md:py-20">
           <div className="mb-10 flex items-end justify-between gap-6">
             <div>
-              <h2 className="text-foreground">Curated for you</h2>
+              <h2 className="text-foreground">
+                {prefs ? "Curated for you" : "Trending now"}
+              </h2>
               <p className="mt-2 text-sm text-muted-foreground">
                 {items === null
                   ? "Loading recommendations…"
-                  : `${items.length} pieces matched to your profile`}
+                  : prefs
+                    ? `${items.length} pieces matched to your ${prefs.vibe?.toLowerCase() ?? "style"} profile`
+                    : `${items.length} pieces — take the quiz to personalize`}
               </p>
             </div>
-            <div className="hidden items-center gap-2 md:flex">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setQuizOpen(true)}
+                className="inline-flex h-9 items-center gap-1.5 rounded-sm bg-foreground px-4 text-xs font-medium text-background transition-opacity hover:opacity-90"
+              >
+                <Sparkles className="h-3.5 w-3.5" strokeWidth={1.75} />
+                {prefs ? "Retake quiz" : "Style quiz"}
+              </button>
               <button
                 onClick={() => setShowEmpty((v) => !v)}
-                className="h-9 rounded-sm border border-border px-4 text-xs font-medium text-muted-foreground transition-colors hover:border-foreground hover:text-foreground"
+                className="hidden h-9 rounded-sm border border-border px-4 text-xs font-medium text-muted-foreground transition-colors hover:border-foreground hover:text-foreground md:inline-flex md:items-center"
               >
                 {showEmpty ? "Show recommendations" : "Preview empty state"}
               </button>
@@ -71,7 +116,12 @@ function Dashboard() {
               ))}
             </div>
           ) : items.length === 0 ? (
-            <EmptyState onStart={() => setShowEmpty(false)} />
+            <EmptyState
+              onStart={() => {
+                setShowEmpty(false);
+                setQuizOpen(true);
+              }}
+            />
           ) : (
             <div className="grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {items.map((p) => (
@@ -88,6 +138,15 @@ function Dashboard() {
           </div>
         </footer>
       </main>
+
+      <StyleQuiz
+        open={quizOpen}
+        onOpenChange={setQuizOpen}
+        onComplete={(p) => {
+          setPrefs(p);
+          setShowEmpty(false);
+        }}
+      />
     </div>
   );
 }
