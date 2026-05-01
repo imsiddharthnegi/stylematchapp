@@ -416,6 +416,7 @@ function Dashboard() {
           }
         }}
       />
+      <AIStylistButton />
     </div>
   );
 }
