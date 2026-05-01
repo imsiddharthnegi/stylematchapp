@@ -158,6 +158,52 @@ function Dashboard() {
       .sort((a, b) => (b.confidence ?? 0) - (a.confidence ?? 0));
   }, [products, prefs]);
 
+  const filtered = useMemo<Product[] | null>(() => {
+    if (!personalized) return null;
+    const catMatchers = filters.categories
+      .map((id) => CATEGORY_GROUPS.find((g) => g.id === id))
+      .filter(Boolean)
+      .flatMap((g) => g!.matches.map((m) => m.toLowerCase()));
+
+    const colorSet = new Set(filters.colors.map((c) => c.toLowerCase()));
+
+    let list = personalized.filter((p) => {
+      if (p.price < filters.price[0] || p.price > filters.price[1]) return false;
+      if (filters.rating > 0 && (p.rating ?? 0) < filters.rating) return false;
+      if (catMatchers.length > 0) {
+        const cat = (p.category ?? "").toLowerCase();
+        if (!catMatchers.some((m) => cat.includes(m))) return false;
+      }
+      if (colorSet.size > 0) {
+        const hay = [
+          ...(p.tags ?? []).map((t) => t.toLowerCase()),
+          (p.name ?? "").toLowerCase(),
+        ].join(" ");
+        if (![...colorSet].some((c) => hay.includes(c))) return false;
+      }
+      return true;
+    });
+
+    list = [...list];
+    switch (filters.sort) {
+      case "price_asc":
+        list.sort((a, b) => a.price - b.price);
+        break;
+      case "trending":
+        list.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
+        break;
+      case "new":
+        list.sort((a, b) =>
+          (b.created_at ?? "").localeCompare(a.created_at ?? ""),
+        );
+        break;
+      case "recommended":
+      default:
+        list.sort((a, b) => (b.confidence ?? 0) - (a.confidence ?? 0));
+    }
+    return list;
+  }, [personalized, filters]);
+
   // Fetch AI reasons for top 6 personalized products, with 1h cache.
   useEffect(() => {
     if (!prefs || !personalized || personalized.length === 0) return;
