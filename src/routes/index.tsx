@@ -1,5 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
+import { zodValidator, fallback } from "@tanstack/zod-adapter";
+import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
@@ -10,8 +12,26 @@ import {
   getSavedPreferences,
   type StylePreferences,
 } from "@/components/StyleQuiz";
+import {
+  FilterSidebar,
+  CATEGORY_GROUPS,
+  DEFAULT_FILTERS,
+  type FilterState,
+} from "@/components/FilterSidebar";
 import { generateRecommendationReasons } from "@/server/recommendations.functions";
-import { Sparkles } from "lucide-react";
+import { Sparkles, SlidersHorizontal, X } from "lucide-react";
+
+const searchSchema = z.object({
+  cats: fallback(z.array(z.string()), []).default([]),
+  pmin: fallback(z.number().min(10).max(500), 10).default(10),
+  pmax: fallback(z.number().min(10).max(500), 500).default(500),
+  colors: fallback(z.array(z.string()), []).default([]),
+  rating: fallback(z.union([z.literal(0), z.literal(3), z.literal(4)]), 0).default(0),
+  sort: fallback(
+    z.enum(["recommended", "price_asc", "trending", "new"]),
+    "recommended",
+  ).default("recommended"),
+});
 
 const REASON_CACHE_KEY = "stylematch:reasons";
 const REASON_TTL_MS = 60 * 60 * 1000; // 1 hour
