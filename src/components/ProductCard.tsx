@@ -1,4 +1,5 @@
 import { Heart } from "lucide-react";
+import { useSavedItems } from "@/hooks/useSavedItems";
 
 export type Product = {
   id: string;
