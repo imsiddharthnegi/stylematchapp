@@ -7,10 +7,8 @@ import {
   Star,
   Share2,
   ShoppingBag,
-  Trash2,
   X,
   Check,
-  Copy,
   GitCompare,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
