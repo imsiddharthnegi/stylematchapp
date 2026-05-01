@@ -516,5 +516,3 @@ function EmptySaved() {
   );
 }
 
-void Trash2;
-void Copy;
