@@ -10,7 +10,47 @@ import {
   getSavedPreferences,
   type StylePreferences,
 } from "@/components/StyleQuiz";
+import { generateRecommendationReasons } from "@/server/recommendations.functions";
 import { Sparkles } from "lucide-react";
+
+const REASON_CACHE_KEY = "stylematch:reasons";
+const REASON_TTL_MS = 60 * 60 * 1000; // 1 hour
+
+type ReasonCache = {
+  prefsHash: string;
+  ts: number;
+  reasons: Record<string, string>;
+};
+
+function hashPrefs(p: StylePreferences): string {
+  return JSON.stringify({
+    v: p.vibe,
+    c: [...(p.colors ?? [])].sort(),
+    p: p.priceRange,
+    f: p.fit,
+  });
+}
+
+function readReasonCache(): ReasonCache | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = localStorage.getItem(REASON_CACHE_KEY);
+    if (!raw) return null;
+    const c = JSON.parse(raw) as ReasonCache;
+    if (Date.now() - c.ts > REASON_TTL_MS) return null;
+    return c;
+  } catch {
+    return null;
+  }
+}
+
+function writeReasonCache(c: ReasonCache) {
+  try {
+    localStorage.setItem(REASON_CACHE_KEY, JSON.stringify(c));
+  } catch {
+    /* ignore */
+  }
+}
 
 export const Route = createFileRoute("/")({
   component: Dashboard,
@@ -48,6 +88,8 @@ function Dashboard() {
   const [prefs, setPrefs] = useState<StylePreferences | null>(null);
   const [quizOpen, setQuizOpen] = useState(false);
   const [showEmpty, setShowEmpty] = useState(false);
+  const [reasons, setReasons] = useState<Record<string, string>>({});
+  const [reasonsLoading, setReasonsLoading] = useState(false);
 
   useEffect(() => {
     setPrefs(getSavedPreferences());
@@ -65,6 +107,55 @@ function Dashboard() {
       .map((p) => ({ ...p, confidence: scoreProduct(p, prefs) }))
       .sort((a, b) => (b.confidence ?? 0) - (a.confidence ?? 0));
   }, [products, prefs]);
+
+  // Fetch AI reasons for top 6 personalized products, with 1h cache.
+  useEffect(() => {
+    if (!prefs || !personalized || personalized.length === 0) return;
+    const top = personalized.slice(0, 6);
+    const prefsHash = hashPrefs(prefs);
+    const cached = readReasonCache();
+    if (cached && cached.prefsHash === prefsHash) {
+      const haveAll = top.every((p) => p.id in cached.reasons);
+      if (haveAll) {
+        setReasons(cached.reasons);
+        return;
+      }
+    }
+
+    let cancelled = false;
+    setReasonsLoading(true);
+    generateRecommendationReasons({
+      data: {
+        preferences: {
+          vibe: prefs.vibe,
+          colors: prefs.colors,
+          priceRange: prefs.priceRange,
+          fit: prefs.fit,
+        },
+        products: top.map((p) => ({
+          id: p.id,
+          name: p.name,
+          category: p.category,
+          price: p.price,
+        })),
+      },
+    })
+      .then((res) => {
+        if (cancelled) return;
+        const map: Record<string, string> = {};
+        for (const r of res.reasons) if (r.reason) map[r.id] = r.reason;
+        setReasons(map);
+        writeReasonCache({ prefsHash, ts: Date.now(), reasons: map });
+      })
+      .catch((err) => console.warn("[reasons]", err))
+      .finally(() => {
+        if (!cancelled) setReasonsLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [prefs, personalized]);
 
   const items = showEmpty ? [] : personalized;
 
@@ -124,8 +215,15 @@ function Dashboard() {
             />
           ) : (
             <div className="grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {items.map((p) => (
-                <ProductCard key={p.id} product={p} />
+              {items.map((p, i) => (
+                <ProductCard
+                  key={p.id}
+                  product={p}
+                  reason={reasons[p.id]}
+                  reasonLoading={
+                    !!prefs && i < 6 && reasonsLoading && !reasons[p.id]
+                  }
+                />
               ))}
             </div>
           )}
@@ -145,6 +243,12 @@ function Dashboard() {
         onComplete={(p) => {
           setPrefs(p);
           setShowEmpty(false);
+          setReasons({});
+          try {
+            localStorage.removeItem(REASON_CACHE_KEY);
+          } catch {
+            /* ignore */
+          }
         }}
       />
     </div>

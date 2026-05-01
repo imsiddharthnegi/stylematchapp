@@ -10,7 +10,15 @@ export type Product = {
   confidence?: number;
 };
 
-export function ProductCard({ product }: { product: Product }) {
+export function ProductCard({
+  product,
+  reason,
+  reasonLoading,
+}: {
+  product: Product;
+  reason?: string;
+  reasonLoading?: boolean;
+}) {
   const confidence = product.confidence ?? Math.round(78 + Math.random() * 20);
   return (
     <article className="group flex flex-col">
@@ -49,6 +57,21 @@ export function ProductCard({ product }: { product: Product }) {
           ${product.price.toFixed(0)}
         </p>
       </div>
+
+      {(reasonLoading || reason) && (
+        <div className="mt-3 min-h-[1.5rem]">
+          {reasonLoading ? (
+            <div className="flex flex-wrap gap-1.5">
+              <span className="h-5 w-32 animate-pulse rounded-full bg-secondary" />
+              <span className="h-5 w-20 animate-pulse rounded-full bg-secondary" />
+            </div>
+          ) : reason ? (
+            <span className="inline-block rounded-full border border-border bg-background px-3 py-1 text-[11px] leading-snug text-muted-foreground">
+              ✦ {reason}
+            </span>
+          ) : null}
+        </div>
+      )}
     </article>
   );
 }
