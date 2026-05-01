@@ -15,6 +15,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Navbar } from "@/components/Navbar";
 import { useSavedItems } from "@/hooks/useSavedItems";
 import { type Product } from "@/components/ProductCard";
+import { toast } from "sonner";
 
 const searchSchema = z.object({
   ids: fallback(z.array(z.string()), []).default([]),
@@ -50,7 +51,7 @@ function SavedPage() {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [compareOpen, setCompareOpen] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [cartToast, setCartToast] = useState<string | null>(null);
+  // (cart toast handled via sonner)
 
   useEffect(() => {
     if (!hydrated) return;
@@ -115,8 +116,9 @@ function SavedPage() {
     } catch {
       /* ignore */
     }
-    setCartToast(`Added ${target.length} item${target.length === 1 ? "" : "s"} to cart`);
-    setTimeout(() => setCartToast(null), 2400);
+    toast.success("Added to cart", {
+      description: `${target.length} item${target.length === 1 ? "" : "s"}`,
+    });
   };
 
   const compareProducts = useMemo(
@@ -127,7 +129,7 @@ function SavedPage() {
   const showEmpty = hydrated && (products?.length ?? 0) === 0;
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="sm-page-enter min-h-screen bg-background text-foreground">
       <Navbar />
       <main>
         <section className="mx-auto max-w-7xl px-6 py-16 md:px-10 md:py-20">
@@ -214,11 +216,6 @@ function SavedPage() {
         />
       )}
 
-      {cartToast && (
-        <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-full bg-foreground px-5 py-2.5 text-xs font-medium text-background shadow-lg">
-          {cartToast}
-        </div>
-      )}
     </div>
   );
 }

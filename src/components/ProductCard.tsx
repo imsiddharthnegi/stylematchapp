@@ -1,4 +1,6 @@
 import { Heart } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 import { useSavedItems } from "@/hooks/useSavedItems";
 
 export type Product = {
@@ -13,6 +15,39 @@ export type Product = {
   confidence?: number;
 };
 
+function useCountUp(target: number, duration = 900) {
+  const [value, setValue] = useState(0);
+  const startedRef = useRef<number | null>(null);
+  const rafRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    setValue(0);
+    startedRef.current = null;
+    const reduced =
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    if (reduced) {
+      setValue(target);
+      return;
+    }
+    const step = (ts: number) => {
+      if (startedRef.current === null) startedRef.current = ts;
+      const elapsed = ts - startedRef.current;
+      const t = Math.min(1, elapsed / duration);
+      // easeOutCubic
+      const eased = 1 - Math.pow(1 - t, 3);
+      setValue(Math.round(target * eased));
+      if (t < 1) rafRef.current = requestAnimationFrame(step);
+    };
+    rafRef.current = requestAnimationFrame(step);
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, [target, duration]);
+
+  return value;
+}
+
 export function ProductCard({
   product,
   reason,
@@ -23,17 +58,31 @@ export function ProductCard({
   reasonLoading?: boolean;
 }) {
   const confidence = product.confidence ?? Math.round(78 + Math.random() * 20);
+  const animatedConfidence = useCountUp(confidence);
   const { isSaved, toggle } = useSavedItems();
   const saved = isSaved(product.id);
+
+  const handleSave = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const wasSaved = saved;
+    await toggle(product.id);
+    if (wasSaved) {
+      toast("Removed", { description: product.name });
+    } else {
+      toast.success("Saved", { description: product.name });
+    }
+  };
+
   return (
-    <article className="group flex flex-col">
+    <article className="sm-card group flex cursor-pointer flex-col">
       <div className="relative aspect-[4/5] overflow-hidden rounded-sm bg-secondary">
         {product.image_url ? (
           <img
             src={product.image_url}
             alt={product.name}
             loading="lazy"
-            className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+            className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]"
           />
         ) : (
           <div className="h-full w-full bg-muted" />
@@ -41,18 +90,21 @@ export function ProductCard({
         <button
           aria-label={saved ? "Remove from saved" : "Save"}
           aria-pressed={saved}
-          onClick={() => void toggle(product.id)}
-          className={`absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full backdrop-blur transition-all ${
+          onClick={handleSave}
+          className={`sm-focus absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full backdrop-blur transition-all duration-200 active:scale-90 ${
             saved
               ? "bg-foreground text-background opacity-100"
-              : "bg-background/85 text-foreground opacity-0 hover:bg-background group-hover:opacity-100"
+              : "bg-background/85 text-foreground opacity-0 hover:bg-background group-hover:opacity-100 focus-visible:opacity-100"
           }`}
         >
-          <Heart className="h-4 w-4" fill={saved ? "currentColor" : "none"} />
+          <Heart
+            className="h-4 w-4 transition-transform"
+            fill={saved ? "currentColor" : "none"}
+          />
         </button>
         <div className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-full bg-confidence-soft px-2.5 py-1 text-[11px] font-medium text-confidence backdrop-blur">
           <span className="h-1.5 w-1.5 rounded-full bg-confidence" />
-          {confidence}% match
+          <span className="tabular-nums">{animatedConfidence}%</span> match
         </div>
       </div>
       <div className="mt-4 flex items-start justify-between gap-4">
@@ -60,7 +112,7 @@ export function ProductCard({
           <p className="text-[11px] uppercase tracking-wider text-muted-foreground">
             {product.category ?? "Apparel"}
           </p>
-          <h3 className="mt-1 truncate text-[15px] font-medium text-foreground">
+          <h3 className="mt-1 truncate text-[15px] font-medium text-foreground transition-colors group-hover:text-foreground/80">
             {product.name}
           </h3>
         </div>
@@ -73,11 +125,11 @@ export function ProductCard({
         <div className="mt-3 min-h-[1.5rem]">
           {reasonLoading ? (
             <div className="flex flex-wrap gap-1.5">
-              <span className="h-5 w-32 animate-pulse rounded-full bg-secondary" />
-              <span className="h-5 w-20 animate-pulse rounded-full bg-secondary" />
+              <span className="sm-shimmer h-5 w-32 rounded-full" />
+              <span className="sm-shimmer h-5 w-20 rounded-full" />
             </div>
           ) : reason ? (
-            <span className="inline-block rounded-full border border-border bg-background px-3 py-1 text-[11px] leading-snug text-muted-foreground">
+            <span className="inline-block animate-[sm-fade-in_0.4s_ease-out_both] rounded-full border border-border bg-background px-3 py-1 text-[11px] leading-snug text-muted-foreground">
               ✦ {reason}
             </span>
           ) : null}
