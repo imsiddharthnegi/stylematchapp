@@ -93,10 +93,12 @@ export function StyleQuiz({
       const user = userRes?.user;
       if (user) {
         await supabase.from("user_profiles").upsert(
-          {
-            user_id: user.id,
-            style_preferences: prefs as unknown as Record<string, unknown>,
-          },
+          [
+            {
+              user_id: user.id,
+              style_preferences: prefs as unknown as Record<string, unknown>,
+            },
+          ],
           { onConflict: "user_id" },
         );
       }
