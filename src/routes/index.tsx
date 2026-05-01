@@ -257,7 +257,7 @@ function Dashboard() {
   const totalCount = filtered?.length ?? 0;
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="sm-page-enter min-h-screen bg-background text-foreground">
       <Navbar />
       <main>
         <Hero />
@@ -341,9 +341,9 @@ function Dashboard() {
                 <div className="grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
                   {Array.from({ length: 6 }).map((_, i) => (
                     <div key={i} className="flex flex-col gap-4">
-                      <div className="aspect-[4/5] animate-pulse rounded-sm bg-secondary" />
-                      <div className="h-3 w-1/3 animate-pulse rounded-sm bg-secondary" />
-                      <div className="h-4 w-2/3 animate-pulse rounded-sm bg-secondary" />
+                      <div className="sm-shimmer aspect-[4/5] rounded-sm" />
+                      <div className="sm-shimmer h-3 w-1/3 rounded-sm" />
+                      <div className="sm-shimmer h-4 w-2/3 rounded-sm" />
                     </div>
                   ))}
                 </div>
