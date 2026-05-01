@@ -253,7 +253,8 @@ function Dashboard() {
     };
   }, [prefs, personalized]);
 
-  const items = showEmpty ? [] : personalized;
+  const items = showEmpty ? [] : filtered;
+  const totalCount = filtered?.length ?? 0;
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -271,11 +272,18 @@ function Dashboard() {
                 {items === null
                   ? "Loading recommendations…"
                   : prefs
-                    ? `${items.length} pieces matched to your ${prefs.vibe?.toLowerCase() ?? "style"} profile`
-                    : `${items.length} pieces — take the quiz to personalize`}
+                    ? `${totalCount} pieces matched to your ${prefs.vibe?.toLowerCase() ?? "style"} profile`
+                    : `${totalCount} pieces — take the quiz to personalize`}
               </p>
             </div>
             <div className="flex items-center gap-2">
+              <button
+                onClick={() => setMobileFiltersOpen((v) => !v)}
+                className="inline-flex h-9 items-center gap-1.5 rounded-sm border border-border px-4 text-xs font-medium text-foreground transition-colors hover:border-foreground lg:hidden"
+              >
+                <SlidersHorizontal className="h-3.5 w-3.5" strokeWidth={1.75} />
+                Filters
+              </button>
               <button
                 onClick={() => setQuizOpen(true)}
                 className="inline-flex h-9 items-center gap-1.5 rounded-sm bg-foreground px-4 text-xs font-medium text-background transition-opacity hover:opacity-90"
@@ -292,37 +300,88 @@ function Dashboard() {
             </div>
           </div>
 
-          {items === null ? (
-            <div className="grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} className="flex flex-col gap-4">
-                  <div className="aspect-[4/5] animate-pulse rounded-sm bg-secondary" />
-                  <div className="h-3 w-1/3 animate-pulse rounded-sm bg-secondary" />
-                  <div className="h-4 w-2/3 animate-pulse rounded-sm bg-secondary" />
-                </div>
-              ))}
+          <div className="grid grid-cols-1 gap-10 lg:grid-cols-[220px_1fr] lg:gap-12">
+            {/* Desktop sidebar */}
+            <div className="hidden lg:block">
+              <FilterSidebar
+                value={filters}
+                onChange={setFilters}
+                resultCount={totalCount}
+              />
             </div>
-          ) : items.length === 0 ? (
-            <EmptyState
-              onStart={() => {
-                setShowEmpty(false);
-                setQuizOpen(true);
-              }}
-            />
-          ) : (
-            <div className="grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {items.map((p, i) => (
-                <ProductCard
-                  key={p.id}
-                  product={p}
-                  reason={reasons[p.id]}
-                  reasonLoading={
-                    !!prefs && i < 6 && reasonsLoading && !reasons[p.id]
-                  }
+
+            {/* Mobile sheet */}
+            {mobileFiltersOpen && (
+              <div className="fixed inset-0 z-50 flex lg:hidden">
+                <div
+                  className="absolute inset-0 bg-foreground/40"
+                  onClick={() => setMobileFiltersOpen(false)}
                 />
-              ))}
+                <div className="relative ml-auto flex h-full w-[88%] max-w-sm flex-col gap-6 overflow-y-auto bg-background p-6">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-base font-medium text-foreground">Filters</h3>
+                    <button
+                      onClick={() => setMobileFiltersOpen(false)}
+                      className="flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground hover:text-foreground"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                  <FilterSidebar
+                    value={filters}
+                    onChange={setFilters}
+                    resultCount={totalCount}
+                  />
+                </div>
+              </div>
+            )}
+
+            <div>
+              {items === null ? (
+                <div className="grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <div key={i} className="flex flex-col gap-4">
+                      <div className="aspect-[4/5] animate-pulse rounded-sm bg-secondary" />
+                      <div className="h-3 w-1/3 animate-pulse rounded-sm bg-secondary" />
+                      <div className="h-4 w-2/3 animate-pulse rounded-sm bg-secondary" />
+                    </div>
+                  ))}
+                </div>
+              ) : items.length === 0 ? (
+                showEmpty || personalized?.length === 0 ? (
+                  <EmptyState
+                    onStart={() => {
+                      setShowEmpty(false);
+                      setQuizOpen(true);
+                    }}
+                  />
+                ) : (
+                  <div className="flex flex-col items-center justify-center gap-4 rounded-sm border border-dashed border-border py-20 text-center">
+                    <p className="text-sm text-foreground">No pieces match your filters.</p>
+                    <button
+                      onClick={() => setFilters(DEFAULT_FILTERS)}
+                      className="text-xs uppercase tracking-wider text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      Reset filters
+                    </button>
+                  </div>
+                )
+              ) : (
+                <div className="grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
+                  {items.map((p, i) => (
+                    <ProductCard
+                      key={p.id}
+                      product={p}
+                      reason={reasons[p.id]}
+                      reasonLoading={
+                        !!prefs && i < 6 && reasonsLoading && !reasons[p.id]
+                      }
+                    />
+                  ))}
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </section>
 
         <footer className="border-t border-border">
