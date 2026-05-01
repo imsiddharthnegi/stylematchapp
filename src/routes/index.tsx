@@ -105,18 +105,47 @@ function scoreProduct(p: Product, prefs: StylePreferences): number {
 }
 
 function Dashboard() {
+  const search = Route.useSearch();
+  const navigate = useNavigate({ from: Route.fullPath });
+
+  const filters: FilterState = useMemo(
+    () => ({
+      categories: search.cats,
+      price: [search.pmin, search.pmax],
+      colors: search.colors,
+      rating: search.rating,
+      sort: search.sort,
+    }),
+    [search],
+  );
+
+  const setFilters = (next: FilterState) => {
+    navigate({
+      search: {
+        cats: next.categories,
+        pmin: next.price[0],
+        pmax: next.price[1],
+        colors: next.colors,
+        rating: next.rating,
+        sort: next.sort,
+      },
+      replace: true,
+    });
+  };
+
   const [products, setProducts] = useState<Product[] | null>(null);
   const [prefs, setPrefs] = useState<StylePreferences | null>(null);
   const [quizOpen, setQuizOpen] = useState(false);
   const [showEmpty, setShowEmpty] = useState(false);
   const [reasons, setReasons] = useState<Record<string, string>>({});
   const [reasonsLoading, setReasonsLoading] = useState(false);
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   useEffect(() => {
     setPrefs(getSavedPreferences());
     supabase
       .from("products")
-      .select("id,name,price,image_url,category,rating")
+      .select("id,name,price,image_url,category,rating,tags,created_at")
       .order("created_at", { ascending: false })
       .then(({ data }) => setProducts((data as Product[]) ?? []));
   }, []);
