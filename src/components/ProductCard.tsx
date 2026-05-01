@@ -74,9 +74,13 @@ export function ProductCard({
     }
   };
 
+  // Vary aspect ratio across cards for a masonry feel — deterministic per id
+  const aspectVariants = ["aspect-[4/5]", "aspect-[3/4]", "aspect-[4/6]", "aspect-[5/6]"];
+  const aspect = aspectVariants[product.id.charCodeAt(0) % aspectVariants.length];
+
   return (
-    <article className="sm-card group flex cursor-pointer flex-col">
-      <div className="relative aspect-[4/5] overflow-hidden rounded-sm bg-secondary">
+    <article className="sm-card group mb-6 flex cursor-pointer break-inside-avoid flex-col">
+      <div className={`relative ${aspect} overflow-hidden rounded-2xl bg-secondary`}>
         {product.image_url ? (
           <img
             src={product.image_url}
@@ -93,8 +97,8 @@ export function ProductCard({
           onClick={handleSave}
           className={`sm-focus absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full backdrop-blur transition-all duration-200 active:scale-90 ${
             saved
-              ? "bg-foreground text-background opacity-100"
-              : "bg-background/85 text-foreground opacity-0 hover:bg-background group-hover:opacity-100 focus-visible:opacity-100"
+              ? "bg-primary text-primary-foreground opacity-100"
+              : "bg-background/70 text-foreground opacity-0 hover:bg-background group-hover:opacity-100 focus-visible:opacity-100"
           }`}
         >
           <Heart
@@ -102,17 +106,24 @@ export function ProductCard({
             fill={saved ? "currentColor" : "none"}
           />
         </button>
-        <div className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-full bg-confidence-soft px-2.5 py-1 text-[11px] font-medium text-confidence backdrop-blur">
-          <span className="h-1.5 w-1.5 rounded-full bg-confidence" />
-          <span className="tabular-nums">{animatedConfidence}%</span> match
-        </div>
+        {confidence >= 95 ? (
+          <div className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-full bg-gradient-gold px-2.5 py-1 text-[11px] font-semibold text-primary-foreground shadow-glow">
+            <span className="h-1.5 w-1.5 rounded-full bg-primary-foreground/80" />
+            <span className="tabular-nums">{animatedConfidence}%</span> match
+          </div>
+        ) : (
+          <div className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-full bg-background/70 px-2.5 py-1 text-[11px] font-medium text-confidence backdrop-blur">
+            <span className="h-1.5 w-1.5 rounded-full bg-confidence" />
+            <span className="tabular-nums">{animatedConfidence}%</span> match
+          </div>
+        )}
       </div>
       <div className="mt-4 flex items-start justify-between gap-4">
         <div className="min-w-0">
           <p className="text-[11px] uppercase tracking-wider text-muted-foreground">
             {product.category ?? "Apparel"}
           </p>
-          <h3 className="mt-1 truncate text-[15px] font-medium text-foreground transition-colors group-hover:text-foreground/80">
+          <h3 className="mt-1 truncate text-[15px] font-medium text-foreground transition-colors group-hover:text-primary">
             {product.name}
           </h3>
         </div>
@@ -129,7 +140,7 @@ export function ProductCard({
               <span className="sm-shimmer h-5 w-20 rounded-full" />
             </div>
           ) : reason ? (
-            <span className="inline-block animate-[sm-fade-in_0.4s_ease-out_both] rounded-full border border-border bg-background px-3 py-1 text-[11px] leading-snug text-muted-foreground">
+            <span className="inline-block animate-[sm-fade-in_0.4s_ease-out_both] rounded-full border border-border bg-card/60 px-3 py-1 text-[11px] leading-snug text-muted-foreground">
               ✦ {reason}
             </span>
           ) : null}
