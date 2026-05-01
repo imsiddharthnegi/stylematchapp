@@ -243,6 +243,12 @@ function Dashboard() {
         onComplete={(p) => {
           setPrefs(p);
           setShowEmpty(false);
+          setReasons({});
+          try {
+            localStorage.removeItem(REASON_CACHE_KEY);
+          } catch {
+            /* ignore */
+          }
         }}
       />
     </div>
