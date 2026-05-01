@@ -10,7 +10,15 @@ export type Product = {
   confidence?: number;
 };
 
-export function ProductCard({ product }: { product: Product }) {
+export function ProductCard({
+  product,
+  reason,
+  reasonLoading,
+}: {
+  product: Product;
+  reason?: string;
+  reasonLoading?: boolean;
+}) {
   const confidence = product.confidence ?? Math.round(78 + Math.random() * 20);
   return (
     <article className="group flex flex-col">
