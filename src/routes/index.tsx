@@ -215,8 +215,15 @@ function Dashboard() {
             />
           ) : (
             <div className="grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {items.map((p) => (
-                <ProductCard key={p.id} product={p} />
+              {items.map((p, i) => (
+                <ProductCard
+                  key={p.id}
+                  product={p}
+                  reason={reasons[p.id]}
+                  reasonLoading={
+                    !!prefs && i < 6 && reasonsLoading && !reasons[p.id]
+                  }
+                />
               ))}
             </div>
           )}
