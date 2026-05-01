@@ -96,7 +96,8 @@ export function StyleQuiz({
           [
             {
               user_id: user.id,
-              style_preferences: prefs as unknown as Record<string, unknown>,
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              style_preferences: prefs as any,
             },
           ],
           { onConflict: "user_id" },
