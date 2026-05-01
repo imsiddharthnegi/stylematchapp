@@ -1,5 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
+import { zodValidator, fallback } from "@tanstack/zod-adapter";
+import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
@@ -10,8 +12,26 @@ import {
   getSavedPreferences,
   type StylePreferences,
 } from "@/components/StyleQuiz";
+import {
+  FilterSidebar,
+  CATEGORY_GROUPS,
+  DEFAULT_FILTERS,
+  type FilterState,
+} from "@/components/FilterSidebar";
 import { generateRecommendationReasons } from "@/server/recommendations.functions";
-import { Sparkles } from "lucide-react";
+import { Sparkles, SlidersHorizontal, X } from "lucide-react";
+
+const searchSchema = z.object({
+  cats: fallback(z.array(z.string()), []).default([]),
+  pmin: fallback(z.number().min(10).max(500), 10).default(10),
+  pmax: fallback(z.number().min(10).max(500), 500).default(500),
+  colors: fallback(z.array(z.string()), []).default([]),
+  rating: fallback(z.union([z.literal(0), z.literal(3), z.literal(4)]), 0).default(0),
+  sort: fallback(
+    z.enum(["recommended", "price_asc", "trending", "new"]),
+    "recommended",
+  ).default("recommended"),
+});
 
 const REASON_CACHE_KEY = "stylematch:reasons";
 const REASON_TTL_MS = 60 * 60 * 1000; // 1 hour
@@ -54,6 +74,7 @@ function writeReasonCache(c: ReasonCache) {
 
 export const Route = createFileRoute("/")({
   component: Dashboard,
+  validateSearch: zodValidator(searchSchema),
   head: () => ({
     meta: [
       { title: "StyleMatch — Discover Your Perfect Style" },
@@ -84,18 +105,47 @@ function scoreProduct(p: Product, prefs: StylePreferences): number {
 }
 
 function Dashboard() {
+  const search = Route.useSearch();
+  const navigate = useNavigate({ from: Route.fullPath });
+
+  const filters: FilterState = useMemo(
+    () => ({
+      categories: search.cats,
+      price: [search.pmin, search.pmax],
+      colors: search.colors,
+      rating: search.rating,
+      sort: search.sort,
+    }),
+    [search],
+  );
+
+  const setFilters = (next: FilterState) => {
+    navigate({
+      search: {
+        cats: next.categories,
+        pmin: next.price[0],
+        pmax: next.price[1],
+        colors: next.colors,
+        rating: next.rating,
+        sort: next.sort,
+      },
+      replace: true,
+    });
+  };
+
   const [products, setProducts] = useState<Product[] | null>(null);
   const [prefs, setPrefs] = useState<StylePreferences | null>(null);
   const [quizOpen, setQuizOpen] = useState(false);
   const [showEmpty, setShowEmpty] = useState(false);
   const [reasons, setReasons] = useState<Record<string, string>>({});
   const [reasonsLoading, setReasonsLoading] = useState(false);
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   useEffect(() => {
     setPrefs(getSavedPreferences());
     supabase
       .from("products")
-      .select("id,name,price,image_url,category,rating")
+      .select("id,name,price,image_url,category,rating,tags,created_at")
       .order("created_at", { ascending: false })
       .then(({ data }) => setProducts((data as Product[]) ?? []));
   }, []);
@@ -107,6 +157,52 @@ function Dashboard() {
       .map((p) => ({ ...p, confidence: scoreProduct(p, prefs) }))
       .sort((a, b) => (b.confidence ?? 0) - (a.confidence ?? 0));
   }, [products, prefs]);
+
+  const filtered = useMemo<Product[] | null>(() => {
+    if (!personalized) return null;
+    const catMatchers = filters.categories
+      .map((id) => CATEGORY_GROUPS.find((g) => g.id === id))
+      .filter(Boolean)
+      .flatMap((g) => g!.matches.map((m) => m.toLowerCase()));
+
+    const colorSet = new Set(filters.colors.map((c) => c.toLowerCase()));
+
+    let list = personalized.filter((p) => {
+      if (p.price < filters.price[0] || p.price > filters.price[1]) return false;
+      if (filters.rating > 0 && (p.rating ?? 0) < filters.rating) return false;
+      if (catMatchers.length > 0) {
+        const cat = (p.category ?? "").toLowerCase();
+        if (!catMatchers.some((m) => cat.includes(m))) return false;
+      }
+      if (colorSet.size > 0) {
+        const hay = [
+          ...(p.tags ?? []).map((t) => t.toLowerCase()),
+          (p.name ?? "").toLowerCase(),
+        ].join(" ");
+        if (![...colorSet].some((c) => hay.includes(c))) return false;
+      }
+      return true;
+    });
+
+    list = [...list];
+    switch (filters.sort) {
+      case "price_asc":
+        list.sort((a, b) => a.price - b.price);
+        break;
+      case "trending":
+        list.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
+        break;
+      case "new":
+        list.sort((a, b) =>
+          (b.created_at ?? "").localeCompare(a.created_at ?? ""),
+        );
+        break;
+      case "recommended":
+      default:
+        list.sort((a, b) => (b.confidence ?? 0) - (a.confidence ?? 0));
+    }
+    return list;
+  }, [personalized, filters]);
 
   // Fetch AI reasons for top 6 personalized products, with 1h cache.
   useEffect(() => {
@@ -157,7 +253,8 @@ function Dashboard() {
     };
   }, [prefs, personalized]);
 
-  const items = showEmpty ? [] : personalized;
+  const items = showEmpty ? [] : filtered;
+  const totalCount = filtered?.length ?? 0;
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -175,11 +272,18 @@ function Dashboard() {
                 {items === null
                   ? "Loading recommendations…"
                   : prefs
-                    ? `${items.length} pieces matched to your ${prefs.vibe?.toLowerCase() ?? "style"} profile`
-                    : `${items.length} pieces — take the quiz to personalize`}
+                    ? `${totalCount} pieces matched to your ${prefs.vibe?.toLowerCase() ?? "style"} profile`
+                    : `${totalCount} pieces — take the quiz to personalize`}
               </p>
             </div>
             <div className="flex items-center gap-2">
+              <button
+                onClick={() => setMobileFiltersOpen((v) => !v)}
+                className="inline-flex h-9 items-center gap-1.5 rounded-sm border border-border px-4 text-xs font-medium text-foreground transition-colors hover:border-foreground lg:hidden"
+              >
+                <SlidersHorizontal className="h-3.5 w-3.5" strokeWidth={1.75} />
+                Filters
+              </button>
               <button
                 onClick={() => setQuizOpen(true)}
                 className="inline-flex h-9 items-center gap-1.5 rounded-sm bg-foreground px-4 text-xs font-medium text-background transition-opacity hover:opacity-90"
@@ -196,37 +300,88 @@ function Dashboard() {
             </div>
           </div>
 
-          {items === null ? (
-            <div className="grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} className="flex flex-col gap-4">
-                  <div className="aspect-[4/5] animate-pulse rounded-sm bg-secondary" />
-                  <div className="h-3 w-1/3 animate-pulse rounded-sm bg-secondary" />
-                  <div className="h-4 w-2/3 animate-pulse rounded-sm bg-secondary" />
-                </div>
-              ))}
+          <div className="grid grid-cols-1 gap-10 lg:grid-cols-[220px_1fr] lg:gap-12">
+            {/* Desktop sidebar */}
+            <div className="hidden lg:block">
+              <FilterSidebar
+                value={filters}
+                onChange={setFilters}
+                resultCount={totalCount}
+              />
             </div>
-          ) : items.length === 0 ? (
-            <EmptyState
-              onStart={() => {
-                setShowEmpty(false);
-                setQuizOpen(true);
-              }}
-            />
-          ) : (
-            <div className="grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {items.map((p, i) => (
-                <ProductCard
-                  key={p.id}
-                  product={p}
-                  reason={reasons[p.id]}
-                  reasonLoading={
-                    !!prefs && i < 6 && reasonsLoading && !reasons[p.id]
-                  }
+
+            {/* Mobile sheet */}
+            {mobileFiltersOpen && (
+              <div className="fixed inset-0 z-50 flex lg:hidden">
+                <div
+                  className="absolute inset-0 bg-foreground/40"
+                  onClick={() => setMobileFiltersOpen(false)}
                 />
-              ))}
+                <div className="relative ml-auto flex h-full w-[88%] max-w-sm flex-col gap-6 overflow-y-auto bg-background p-6">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-base font-medium text-foreground">Filters</h3>
+                    <button
+                      onClick={() => setMobileFiltersOpen(false)}
+                      className="flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground hover:text-foreground"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                  <FilterSidebar
+                    value={filters}
+                    onChange={setFilters}
+                    resultCount={totalCount}
+                  />
+                </div>
+              </div>
+            )}
+
+            <div>
+              {items === null ? (
+                <div className="grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <div key={i} className="flex flex-col gap-4">
+                      <div className="aspect-[4/5] animate-pulse rounded-sm bg-secondary" />
+                      <div className="h-3 w-1/3 animate-pulse rounded-sm bg-secondary" />
+                      <div className="h-4 w-2/3 animate-pulse rounded-sm bg-secondary" />
+                    </div>
+                  ))}
+                </div>
+              ) : items.length === 0 ? (
+                showEmpty || personalized?.length === 0 ? (
+                  <EmptyState
+                    onStart={() => {
+                      setShowEmpty(false);
+                      setQuizOpen(true);
+                    }}
+                  />
+                ) : (
+                  <div className="flex flex-col items-center justify-center gap-4 rounded-sm border border-dashed border-border py-20 text-center">
+                    <p className="text-sm text-foreground">No pieces match your filters.</p>
+                    <button
+                      onClick={() => setFilters(DEFAULT_FILTERS)}
+                      className="text-xs uppercase tracking-wider text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      Reset filters
+                    </button>
+                  </div>
+                )
+              ) : (
+                <div className="grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
+                  {items.map((p, i) => (
+                    <ProductCard
+                      key={p.id}
+                      product={p}
+                      reason={reasons[p.id]}
+                      reasonLoading={
+                        !!prefs && i < 6 && reasonsLoading && !reasons[p.id]
+                      }
+                    />
+                  ))}
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </section>
 
         <footer className="border-t border-border">

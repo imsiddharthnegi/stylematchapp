@@ -7,6 +7,8 @@ export type Product = {
   image_url: string | null;
   category: string | null;
   rating: number | null;
+  tags?: string[] | null;
+  created_at?: string | null;
   confidence?: number;
 };
 
