@@ -39,10 +39,16 @@ export function ProductCard({
           <div className="h-full w-full bg-muted" />
         )}
         <button
-          aria-label="Save"
-          className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-background/85 text-foreground opacity-0 backdrop-blur transition-opacity hover:bg-background group-hover:opacity-100"
+          aria-label={saved ? "Remove from saved" : "Save"}
+          aria-pressed={saved}
+          onClick={() => void toggle(product.id)}
+          className={`absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full backdrop-blur transition-all ${
+            saved
+              ? "bg-foreground text-background opacity-100"
+              : "bg-background/85 text-foreground opacity-0 hover:bg-background group-hover:opacity-100"
+          }`}
         >
-          <Heart className="h-4 w-4" />
+          <Heart className="h-4 w-4" fill={saved ? "currentColor" : "none"} />
         </button>
         <div className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-full bg-confidence-soft px-2.5 py-1 text-[11px] font-medium text-confidence backdrop-blur">
           <span className="h-1.5 w-1.5 rounded-full bg-confidence" />
