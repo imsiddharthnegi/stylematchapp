@@ -125,10 +125,10 @@ export function FilterSidebar({
                   className="group flex w-full items-center gap-3 text-left"
                 >
                   <span
-                    className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-[3px] border transition-colors ${
+                    className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-[4px] border transition-all ${
                       active
-                        ? "border-foreground bg-foreground text-background"
-                        : "border-border group-hover:border-foreground/60"
+                        ? "border-transparent bg-gradient-primary text-white shadow-glow"
+                        : "border-white/20 group-hover:border-white/50"
                     }`}
                   >
                     {active && <Check className="h-3 w-3" strokeWidth={3} />}
