@@ -173,10 +173,10 @@ export function FilterSidebar({
                 onClick={() => toggleColor(c.name)}
                 title={c.name}
                 aria-label={c.name}
-                className={`relative flex h-9 w-9 items-center justify-center rounded-full border transition-all ${
+                className={`group/sw relative flex h-9 w-9 items-center justify-center rounded-full border transition-all duration-200 hover:scale-110 ${
                   active
-                    ? "border-foreground ring-2 ring-foreground ring-offset-2 ring-offset-background"
-                    : "border-border hover:scale-105"
+                    ? "border-white ring-2 ring-primary/70 ring-offset-2 ring-offset-background shadow-glow"
+                    : "border-white/15 hover:border-white/40 hover:shadow-glow"
                 }`}
                 style={{ backgroundColor: c.hex }}
               >
