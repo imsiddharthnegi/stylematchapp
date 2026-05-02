@@ -63,32 +63,36 @@
 
 :root {
   --radius: 1rem;
-  /* Dark luxury palette — deep charcoal, sage green, warm gold */
-  --background: oklch(0.14 0.003 60);          /* #0A0A0A-ish */
-  --foreground: oklch(0.96 0.004 80);          /* warm off-white */
-  --card: oklch(0.175 0.004 60);
-  --card-foreground: oklch(0.96 0.004 80);
-  --popover: oklch(0.175 0.004 60);
-  --popover-foreground: oklch(0.96 0.004 80);
-  --primary: oklch(0.84 0.06 100);             /* warm gold #D4AF88 */
-  --primary-foreground: oklch(0.16 0.003 60);
-  --secondary: oklch(0.22 0.004 60);
-  --secondary-foreground: oklch(0.96 0.004 80);
-  --muted: oklch(0.21 0.004 60);
-  --muted-foreground: oklch(0.66 0.008 70);
-  --accent: oklch(0.82 0.05 155);              /* sage #A8CABA */
-  --accent-foreground: oklch(0.16 0.003 60);
-  --destructive: oklch(0.6 0.2 27);
-  --destructive-foreground: oklch(0.98 0.002 60);
-  --border: oklch(0.27 0.004 60);
-  --input: oklch(0.25 0.004 60);
-  --ring: oklch(0.84 0.06 100);
-  --confidence: oklch(0.82 0.05 155);          /* sage for normal match */
-  --gold: oklch(0.84 0.09 90);                  /* premium gold for 95%+ */
-  --blush: oklch(0.85 0.04 30);
-  --gradient-gold: linear-gradient(135deg, oklch(0.88 0.1 95), oklch(0.78 0.08 70));
-  --shadow-glow: 0 0 40px -10px color-mix(in oklab, var(--primary) 50%, transparent);
-  --shadow-luxe: 0 20px 60px -20px oklch(0 0 0 / 0.6);
+  /* Premium dark — deep navy #0F1117, blue→purple gradient accents */
+  --background: oklch(0.165 0.012 265);        /* #0F1117 */
+  --foreground: oklch(0.92 0.004 260);         /* #E0E0E0 */
+  --card: oklch(0.21 0.018 270);               /* ~#1a1a2e */
+  --card-foreground: oklch(0.92 0.004 260);
+  --popover: oklch(0.21 0.018 270);
+  --popover-foreground: oklch(0.92 0.004 260);
+  --primary: oklch(0.65 0.19 265);             /* #3B82F6 blue */
+  --primary-foreground: oklch(0.98 0.002 260);
+  --secondary: oklch(0.245 0.022 275);
+  --secondary-foreground: oklch(0.92 0.004 260);
+  --muted: oklch(0.235 0.018 270);
+  --muted-foreground: oklch(0.68 0.02 270);
+  --accent: oklch(0.62 0.22 305);              /* #A855F7 purple */
+  --accent-foreground: oklch(0.98 0.002 260);
+  --destructive: oklch(0.65 0.22 25);
+  --destructive-foreground: oklch(0.98 0.002 260);
+  --border: oklch(1 0 0 / 0.1);
+  --input: oklch(1 0 0 / 0.08);
+  --ring: oklch(0.65 0.19 265);
+  --confidence: oklch(0.72 0.17 155);          /* #10B981 green for 95%+ */
+  --confidence-mid: oklch(0.78 0.16 75);       /* #F59E0B amber for 80-94 */
+  --gold: oklch(0.62 0.22 305);                /* purple highlight */
+  --blush: oklch(0.78 0.13 350);
+  --gradient-primary: linear-gradient(135deg, oklch(0.65 0.19 265), oklch(0.62 0.22 305));
+  --gradient-gold: linear-gradient(135deg, oklch(0.65 0.19 265), oklch(0.62 0.22 305));
+  --shadow-glow: 0 0 40px 0 color-mix(in oklab, oklch(0.65 0.19 265) 45%, transparent);
+  --shadow-neon: 0 0 20px 0 color-mix(in oklab, oklch(0.62 0.22 305) 55%, transparent), 0 0 40px 0 color-mix(in oklab, oklch(0.65 0.19 265) 35%, transparent);
+  --shadow-luxe: 0 24px 60px -20px oklch(0 0 0 / 0.7);
+  --glass: color-mix(in oklab, oklch(0.21 0.018 270) 70%, transparent);
   --font-display: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-body: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
   --chart-1: oklch(0.646 0.222 41.116);
