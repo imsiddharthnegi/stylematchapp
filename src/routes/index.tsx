@@ -377,7 +377,8 @@ function Dashboard() {
                       key={p.id}
                       to="/products/$productId"
                       params={{ productId: p.id }}
-                      className="block"
+                      className="sm-card-in block break-inside-avoid"
+                      style={{ animationDelay: `${Math.min(i, 12) * 100}ms` }}
                     >
                       <ProductCard
                         product={p}
