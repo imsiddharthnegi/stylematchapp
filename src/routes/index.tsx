@@ -287,7 +287,7 @@ function Dashboard() {
               </button>
               <button
                 onClick={() => setQuizOpen(true)}
-                className="inline-flex h-9 items-center gap-1.5 rounded-sm bg-foreground px-4 text-xs font-medium text-background transition-opacity hover:opacity-90"
+                className="btn-neon inline-flex h-9 items-center gap-1.5 rounded-full px-4 text-xs font-semibold"
               >
                 <Sparkles className="h-3.5 w-3.5" strokeWidth={1.75} />
                 {prefs ? "Retake quiz" : "Style quiz"}
