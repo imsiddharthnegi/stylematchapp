@@ -212,12 +212,12 @@ export function FilterSidebar({
                   <span
                     className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full border transition-colors ${
                       active
-                        ? "border-foreground"
-                        : "border-border group-hover:border-foreground/60"
+                        ? "border-transparent bg-gradient-primary shadow-glow"
+                        : "border-white/20 group-hover:border-white/50"
                     }`}
                   >
                     {active && (
-                      <span className="h-2 w-2 rounded-full bg-foreground" />
+                      <span className="h-1.5 w-1.5 rounded-full bg-white" />
                     )}
                   </span>
                   <span className="text-sm text-foreground">{r.label}</span>
