@@ -5,40 +5,49 @@ export function Hero({ onStartQuiz }: { onStartQuiz?: () => void }) {
   return (
     <>
       <section className="relative overflow-hidden border-b border-border">
-        {/* Background image — full bleed, dimmed for legibility */}
         <div className="absolute inset-0 -z-10">
           <img
             src={heroImg}
             alt=""
             aria-hidden="true"
-            className="h-full w-full object-cover object-[center_30%] opacity-70"
+            className="h-full w-full object-cover object-[center_30%]"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/85 to-background/30" />
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background/40" />
+          {/* Dark overlay for legibility */}
+          <div className="absolute inset-0 bg-black/55" />
+          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-background/20" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background/30" />
+          {/* Subtle blue/purple wash */}
+          <div
+            className="absolute inset-0 opacity-40 mix-blend-screen"
+            style={{ background: "radial-gradient(60% 50% at 30% 40%, rgba(59,130,246,0.25), transparent), radial-gradient(50% 50% at 80% 70%, rgba(168,85,247,0.22), transparent)" }}
+          />
         </div>
 
         <div className="mx-auto grid min-h-[78vh] max-w-7xl grid-cols-1 items-center gap-12 px-6 py-24 md:px-10 md:py-32 lg:grid-cols-[1.15fr_1fr]">
           <div className="relative z-10">
-            <p className="mb-7 inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/40 px-3 py-1.5 text-[11px] font-medium uppercase tracking-[0.2em] text-muted-foreground backdrop-blur">
-              <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-              AI Stylist · Quiet Luxury
+            <p className="mb-7 inline-flex items-center gap-2 rounded-full glass px-3 py-1.5 text-[11px] font-medium uppercase tracking-[0.2em] text-muted-foreground">
+              <span className="h-1.5 w-1.5 rounded-full bg-gradient-primary" />
+              AI Stylist · Curated Daily
             </p>
-            <h1 className="text-foreground" style={{ fontSize: "clamp(2.75rem, 6vw, 5rem)", lineHeight: 1.02, letterSpacing: "-0.035em" }}>
+            <h1
+              className="text-foreground"
+              style={{ fontSize: "clamp(2.75rem, 6vw, 4.5rem)", lineHeight: 1.02, letterSpacing: "-0.04em", fontWeight: 600 }}
+            >
               Discover Your<br />
-              <span className="italic font-light text-primary">Signature Style</span>
+              <span className="text-gradient italic font-semibold">Signature Style</span>
             </h1>
-            <p className="mt-8 max-w-xl text-lg leading-relaxed text-muted-foreground">
+            <p className="mt-7 max-w-xl text-lg leading-relaxed text-muted-foreground">
               AI learns your taste in 60 seconds and curates perfect pieces — no
               noise, just matches you'll actually wear.
             </p>
             <div className="mt-10 flex flex-wrap items-center gap-4">
               <button
                 onClick={onStartQuiz}
-                className="sm-glow group inline-flex h-14 items-center gap-2.5 rounded-2xl bg-gradient-gold px-7 text-[15px] font-medium text-primary-foreground transition-all hover:scale-[1.02] active:scale-[0.98]"
+                className="btn-neon sm-glow group inline-flex h-14 items-center gap-2.5 rounded-2xl px-7 text-[15px] font-semibold"
               >
                 <Sparkles className="h-4 w-4" strokeWidth={2} />
                 Start Style Quiz
-                <span className="ml-1 rounded-full bg-background/20 px-2 py-0.5 text-[11px] font-medium">60 sec</span>
+                <span className="ml-1 rounded-full bg-white/20 px-2 py-0.5 text-[11px] font-medium">60 sec</span>
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" strokeWidth={2} />
               </button>
               <a
