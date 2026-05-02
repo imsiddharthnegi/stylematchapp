@@ -80,10 +80,10 @@ export function FilterSidebar({
     value.sort !== "recommended";
 
   return (
-    <aside className="flex w-full flex-col gap-8 lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:pr-2">
+    <aside className="glass flex w-full flex-col gap-7 rounded-2xl p-5 lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+          <h3 className="text-[11px] font-medium uppercase tracking-[0.2em] text-gradient">
             Refine
           </h3>
           <p className="mt-1.5 text-sm text-foreground tabular-nums">
@@ -93,7 +93,7 @@ export function FilterSidebar({
         {hasActive && (
           <button
             onClick={() => onChange(DEFAULT_FILTERS)}
-            className="inline-flex items-center gap-1 text-[11px] uppercase tracking-wider text-muted-foreground transition-colors hover:text-foreground"
+            className="inline-flex items-center gap-1 rounded-full border border-white/10 px-2.5 py-1 text-[10px] uppercase tracking-wider text-muted-foreground transition-colors hover:border-white/30 hover:text-foreground"
           >
             <X className="h-3 w-3" /> Clear
           </button>
