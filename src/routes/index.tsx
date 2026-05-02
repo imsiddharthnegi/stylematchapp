@@ -271,7 +271,7 @@ function Dashboard() {
               </h2>
               <p className="mt-2 text-sm text-muted-foreground">
                 {items === null
-                  ? "Loading recommendations…"
+                  ? "Curating your feed…"
                   : prefs
                     ? `${totalCount} pieces matched to your ${prefs.vibe?.toLowerCase() ?? "style"} profile`
                     : `${totalCount} pieces — take the quiz to personalize`}
@@ -287,7 +287,7 @@ function Dashboard() {
               </button>
               <button
                 onClick={() => setQuizOpen(true)}
-                className="inline-flex h-9 items-center gap-1.5 rounded-sm bg-foreground px-4 text-xs font-medium text-background transition-opacity hover:opacity-90"
+                className="btn-neon inline-flex h-9 items-center gap-1.5 rounded-full px-4 text-xs font-semibold"
               >
                 <Sparkles className="h-3.5 w-3.5" strokeWidth={1.75} />
                 {prefs ? "Retake quiz" : "Style quiz"}
@@ -377,7 +377,8 @@ function Dashboard() {
                       key={p.id}
                       to="/products/$productId"
                       params={{ productId: p.id }}
-                      className="block"
+                      className="sm-card-in block break-inside-avoid"
+                      style={{ animationDelay: `${Math.min(i, 12) * 100}ms` }}
                     >
                       <ProductCard
                         product={p}

@@ -63,32 +63,36 @@
 
 :root {
   --radius: 1rem;
-  /* Dark luxury palette — deep charcoal, sage green, warm gold */
-  --background: oklch(0.14 0.003 60);          /* #0A0A0A-ish */
-  --foreground: oklch(0.96 0.004 80);          /* warm off-white */
-  --card: oklch(0.175 0.004 60);
-  --card-foreground: oklch(0.96 0.004 80);
-  --popover: oklch(0.175 0.004 60);
-  --popover-foreground: oklch(0.96 0.004 80);
-  --primary: oklch(0.84 0.06 100);             /* warm gold #D4AF88 */
-  --primary-foreground: oklch(0.16 0.003 60);
-  --secondary: oklch(0.22 0.004 60);
-  --secondary-foreground: oklch(0.96 0.004 80);
-  --muted: oklch(0.21 0.004 60);
-  --muted-foreground: oklch(0.66 0.008 70);
-  --accent: oklch(0.82 0.05 155);              /* sage #A8CABA */
-  --accent-foreground: oklch(0.16 0.003 60);
-  --destructive: oklch(0.6 0.2 27);
-  --destructive-foreground: oklch(0.98 0.002 60);
-  --border: oklch(0.27 0.004 60);
-  --input: oklch(0.25 0.004 60);
-  --ring: oklch(0.84 0.06 100);
-  --confidence: oklch(0.82 0.05 155);          /* sage for normal match */
-  --gold: oklch(0.84 0.09 90);                  /* premium gold for 95%+ */
-  --blush: oklch(0.85 0.04 30);
-  --gradient-gold: linear-gradient(135deg, oklch(0.88 0.1 95), oklch(0.78 0.08 70));
-  --shadow-glow: 0 0 40px -10px color-mix(in oklab, var(--primary) 50%, transparent);
-  --shadow-luxe: 0 20px 60px -20px oklch(0 0 0 / 0.6);
+  /* Premium dark — deep navy #0F1117, blue→purple gradient accents */
+  --background: oklch(0.165 0.012 265);        /* #0F1117 */
+  --foreground: oklch(0.92 0.004 260);         /* #E0E0E0 */
+  --card: oklch(0.21 0.018 270);               /* ~#1a1a2e */
+  --card-foreground: oklch(0.92 0.004 260);
+  --popover: oklch(0.21 0.018 270);
+  --popover-foreground: oklch(0.92 0.004 260);
+  --primary: oklch(0.65 0.19 265);             /* #3B82F6 blue */
+  --primary-foreground: oklch(0.98 0.002 260);
+  --secondary: oklch(0.245 0.022 275);
+  --secondary-foreground: oklch(0.92 0.004 260);
+  --muted: oklch(0.235 0.018 270);
+  --muted-foreground: oklch(0.68 0.02 270);
+  --accent: oklch(0.62 0.22 305);              /* #A855F7 purple */
+  --accent-foreground: oklch(0.98 0.002 260);
+  --destructive: oklch(0.65 0.22 25);
+  --destructive-foreground: oklch(0.98 0.002 260);
+  --border: oklch(1 0 0 / 0.1);
+  --input: oklch(1 0 0 / 0.08);
+  --ring: oklch(0.65 0.19 265);
+  --confidence: oklch(0.72 0.17 155);          /* #10B981 green for 95%+ */
+  --confidence-mid: oklch(0.78 0.16 75);       /* #F59E0B amber for 80-94 */
+  --gold: oklch(0.62 0.22 305);                /* purple highlight */
+  --blush: oklch(0.78 0.13 350);
+  --gradient-primary: linear-gradient(135deg, oklch(0.65 0.19 265), oklch(0.62 0.22 305));
+  --gradient-gold: linear-gradient(135deg, oklch(0.65 0.19 265), oklch(0.62 0.22 305));
+  --shadow-glow: 0 0 40px 0 color-mix(in oklab, oklch(0.65 0.19 265) 45%, transparent);
+  --shadow-neon: 0 0 20px 0 color-mix(in oklab, oklch(0.62 0.22 305) 55%, transparent), 0 0 40px 0 color-mix(in oklab, oklch(0.65 0.19 265) 35%, transparent);
+  --shadow-luxe: 0 24px 60px -20px oklch(0 0 0 / 0.7);
+  --glass: color-mix(in oklab, oklch(0.21 0.018 270) 70%, transparent);
   --font-display: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-body: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
   --chart-1: oklch(0.646 0.222 41.116);
@@ -174,41 +178,79 @@
 @layer utilities {
   .text-confidence { color: var(--confidence); }
   .bg-confidence-soft { background-color: color-mix(in oklab, var(--confidence) 18%, transparent); }
+  .text-confidence-mid { color: var(--confidence-mid); }
+  .bg-confidence-mid-soft { background-color: color-mix(in oklab, var(--confidence-mid) 18%, transparent); }
   .text-gold { color: var(--gold); }
   .bg-gold-soft { background-color: color-mix(in oklab, var(--gold) 18%, transparent); }
-  .bg-gradient-gold { background-image: var(--gradient-gold); }
+  .bg-gradient-primary { background-image: var(--gradient-primary); }
+  .bg-gradient-gold { background-image: var(--gradient-primary); }
   .shadow-glow { box-shadow: var(--shadow-glow); }
+  .shadow-neon { box-shadow: var(--shadow-neon); }
   .shadow-luxe { box-shadow: var(--shadow-luxe); }
 
-  /* Subtle film-grain noise overlay */
+  .text-gradient {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .glass {
+    background: var(--glass);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .btn-neon {
+    background-image: var(--gradient-primary);
+    color: var(--primary-foreground);
+    box-shadow: 0 0 20px 0 color-mix(in oklab, var(--primary) 45%, transparent);
+    transition: transform 240ms cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 240ms ease, filter 240ms ease;
+  }
+  .btn-neon:hover {
+    transform: scale(1.05);
+    filter: brightness(1.08);
+    box-shadow: 0 0 28px 4px color-mix(in oklab, var(--accent) 50%, transparent), 0 0 60px 0 color-mix(in oklab, var(--primary) 40%, transparent);
+  }
+  .btn-neon:active { transform: scale(0.98); }
+
   .sm-grain::before {
     content: "";
     position: fixed;
     inset: 0;
     pointer-events: none;
     z-index: 1;
-    opacity: 0.06;
+    opacity: 0.05;
     mix-blend-mode: overlay;
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.6 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
   }
 
-  /* Glow pulse for hero CTA */
   @keyframes sm-glow {
-    0%, 100% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--primary) 35%, transparent), 0 0 30px -8px color-mix(in oklab, var(--primary) 40%, transparent); }
-    50% { box-shadow: 0 0 0 6px color-mix(in oklab, var(--primary) 0%, transparent), 0 0 50px -6px color-mix(in oklab, var(--primary) 60%, transparent); }
+    0%, 100% { box-shadow: 0 0 20px 0 color-mix(in oklab, var(--primary) 40%, transparent); }
+    50% { box-shadow: 0 0 35px 6px color-mix(in oklab, var(--accent) 55%, transparent), 0 0 60px 0 color-mix(in oklab, var(--primary) 45%, transparent); }
   }
   .sm-glow { animation: sm-glow 2.6s ease-in-out infinite; }
 
-  /* Page fade-in */
   @keyframes sm-fade-in {
-    from { opacity: 0; transform: translateY(4px); }
+    from { opacity: 0; transform: translateY(6px); }
     to { opacity: 1; transform: translateY(0); }
   }
-  .sm-page-enter {
-    animation: sm-fade-in 0.4s ease-out both;
-  }
+  .sm-page-enter { animation: sm-fade-in 0.4s ease-out both; }
 
-  /* Shimmer skeleton */
+  @keyframes sm-card-in {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .sm-card-in { animation: sm-card-in 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+
+  @keyframes sm-heart-pop {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.35); }
+    100% { transform: scale(1); }
+  }
+  .sm-heart-pop { animation: sm-heart-pop 0.32s ease-out; }
+
   @keyframes sm-shimmer {
     0% { background-position: -400px 0; }
     100% { background-position: 400px 0; }
@@ -218,7 +260,7 @@
     background-image: linear-gradient(
       90deg,
       transparent 0%,
-      color-mix(in oklab, var(--foreground) 5%, transparent) 50%,
+      color-mix(in oklab, var(--foreground) 8%, transparent) 50%,
       transparent 100%
     );
     background-size: 400px 100%;
@@ -226,25 +268,21 @@
     animation: sm-shimmer 1.4s ease-in-out infinite;
   }
 
-  /* Card hover lift */
   .sm-card {
     transition:
-      transform 280ms cubic-bezier(0.2, 0.8, 0.2, 1),
-      box-shadow 280ms ease;
+      transform 320ms cubic-bezier(0.2, 0.8, 0.2, 1),
+      box-shadow 320ms ease;
     will-change: transform;
   }
   .sm-card:hover {
-    transform: translateY(-2px) scale(1.02);
+    transform: translateY(-6px);
+    box-shadow: 0 24px 50px -12px color-mix(in oklab, var(--primary) 35%, transparent), 0 0 0 1px rgba(255,255,255,0.08);
   }
-  .sm-card:active {
-    transform: scale(0.98);
-    transition-duration: 120ms;
-  }
+  .sm-card:active { transform: scale(0.98); transition-duration: 120ms; }
 
-  /* Focus ring (keyboard only) */
   .sm-focus:focus-visible {
     outline: 2px solid var(--ring);
     outline-offset: 2px;
-    border-radius: 2px;
+    border-radius: 4px;
   }
 }

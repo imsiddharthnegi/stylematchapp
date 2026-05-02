@@ -80,10 +80,10 @@ export function FilterSidebar({
     value.sort !== "recommended";
 
   return (
-    <aside className="flex w-full flex-col gap-8 lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:pr-2">
+    <aside className="glass flex w-full flex-col gap-7 rounded-2xl p-5 lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+          <h3 className="text-[11px] font-medium uppercase tracking-[0.2em] text-gradient">
             Refine
           </h3>
           <p className="mt-1.5 text-sm text-foreground tabular-nums">
@@ -93,7 +93,7 @@ export function FilterSidebar({
         {hasActive && (
           <button
             onClick={() => onChange(DEFAULT_FILTERS)}
-            className="inline-flex items-center gap-1 text-[11px] uppercase tracking-wider text-muted-foreground transition-colors hover:text-foreground"
+            className="inline-flex items-center gap-1 rounded-full border border-white/10 px-2.5 py-1 text-[10px] uppercase tracking-wider text-muted-foreground transition-colors hover:border-white/30 hover:text-foreground"
           >
             <X className="h-3 w-3" /> Clear
           </button>
@@ -104,10 +104,10 @@ export function FilterSidebar({
         <select
           value={value.sort}
           onChange={(e) => update("sort", e.target.value as FilterState["sort"])}
-          className="h-10 w-full rounded-sm border border-border bg-background px-3 text-sm text-foreground focus:border-foreground focus:outline-none"
+          className="h-10 w-full rounded-lg border border-white/10 bg-black/30 px-3 text-sm text-foreground transition-colors focus:border-primary/60 focus:outline-none focus:ring-2 focus:ring-primary/30"
         >
           {SORT_OPTIONS.map((o) => (
-            <option key={o.value} value={o.value}>
+            <option key={o.value} value={o.value} className="bg-background">
               {o.label}
             </option>
           ))}
@@ -125,10 +125,10 @@ export function FilterSidebar({
                   className="group flex w-full items-center gap-3 text-left"
                 >
                   <span
-                    className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-[3px] border transition-colors ${
+                    className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-[4px] border transition-all ${
                       active
-                        ? "border-foreground bg-foreground text-background"
-                        : "border-border group-hover:border-foreground/60"
+                        ? "border-transparent bg-gradient-primary text-white shadow-glow"
+                        : "border-white/20 group-hover:border-white/50"
                     }`}
                   >
                     {active && <Check className="h-3 w-3" strokeWidth={3} />}
@@ -173,10 +173,10 @@ export function FilterSidebar({
                 onClick={() => toggleColor(c.name)}
                 title={c.name}
                 aria-label={c.name}
-                className={`relative flex h-9 w-9 items-center justify-center rounded-full border transition-all ${
+                className={`group/sw relative flex h-9 w-9 items-center justify-center rounded-full border transition-all duration-200 hover:scale-110 ${
                   active
-                    ? "border-foreground ring-2 ring-foreground ring-offset-2 ring-offset-background"
-                    : "border-border hover:scale-105"
+                    ? "border-white ring-2 ring-primary/70 ring-offset-2 ring-offset-background shadow-glow"
+                    : "border-white/15 hover:border-white/40 hover:shadow-glow"
                 }`}
                 style={{ backgroundColor: c.hex }}
               >
@@ -212,12 +212,12 @@ export function FilterSidebar({
                   <span
                     className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full border transition-colors ${
                       active
-                        ? "border-foreground"
-                        : "border-border group-hover:border-foreground/60"
+                        ? "border-transparent bg-gradient-primary shadow-glow"
+                        : "border-white/20 group-hover:border-white/50"
                     }`}
                   >
                     {active && (
-                      <span className="h-2 w-2 rounded-full bg-foreground" />
+                      <span className="h-1.5 w-1.5 rounded-full bg-white" />
                     )}
                   </span>
                   <span className="text-sm text-foreground">{r.label}</span>
@@ -227,6 +227,13 @@ export function FilterSidebar({
           })}
         </ul>
       </Section>
+
+      <button
+        type="button"
+        className="btn-neon mt-2 inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl text-sm font-semibold tracking-wide"
+      >
+        Apply Filters
+      </button>
     </aside>
   );
 }
@@ -239,8 +246,8 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <div className="border-t border-border pt-6 first-of-type:border-t-0 first-of-type:pt-0">
-      <h4 className="mb-4 text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+    <div className="border-t border-white/10 pt-5 first-of-type:border-t-0 first-of-type:pt-0">
+      <h4 className="mb-3 text-[11px] font-medium uppercase tracking-[0.2em] text-muted-foreground">
         {title}
       </h4>
       {children}
