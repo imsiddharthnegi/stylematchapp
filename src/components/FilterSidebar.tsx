@@ -227,6 +227,13 @@ export function FilterSidebar({
           })}
         </ul>
       </Section>
+
+      <button
+        type="button"
+        className="btn-neon mt-2 inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl text-sm font-semibold tracking-wide"
+      >
+        Apply Filters
+      </button>
     </aside>
   );
 }
@@ -239,8 +246,8 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <div className="border-t border-border pt-6 first-of-type:border-t-0 first-of-type:pt-0">
-      <h4 className="mb-4 text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+    <div className="border-t border-white/10 pt-5 first-of-type:border-t-0 first-of-type:pt-0">
+      <h4 className="mb-3 text-[11px] font-medium uppercase tracking-[0.2em] text-muted-foreground">
         {title}
       </h4>
       {children}
