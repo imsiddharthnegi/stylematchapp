@@ -104,10 +104,10 @@ export function FilterSidebar({
         <select
           value={value.sort}
           onChange={(e) => update("sort", e.target.value as FilterState["sort"])}
-          className="h-10 w-full rounded-sm border border-border bg-background px-3 text-sm text-foreground focus:border-foreground focus:outline-none"
+          className="h-10 w-full rounded-lg border border-white/10 bg-black/30 px-3 text-sm text-foreground transition-colors focus:border-primary/60 focus:outline-none focus:ring-2 focus:ring-primary/30"
         >
           {SORT_OPTIONS.map((o) => (
-            <option key={o.value} value={o.value}>
+            <option key={o.value} value={o.value} className="bg-background">
               {o.label}
             </option>
           ))}
