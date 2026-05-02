@@ -61,11 +61,14 @@ export function ProductCard({
   const animatedConfidence = useCountUp(confidence);
   const { isSaved, toggle } = useSavedItems();
   const saved = isSaved(product.id);
+  const [popping, setPopping] = useState(false);
 
   const handleSave = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     const wasSaved = saved;
+    setPopping(true);
+    setTimeout(() => setPopping(false), 340);
     await toggle(product.id);
     if (wasSaved) {
       toast("Removed", { description: product.name });
