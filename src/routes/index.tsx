@@ -271,7 +271,7 @@ function Dashboard() {
               </h2>
               <p className="mt-2 text-sm text-muted-foreground">
                 {items === null
-                  ? "Loading recommendations…"
+                  ? "Curating your feed…"
                   : prefs
                     ? `${totalCount} pieces matched to your ${prefs.vibe?.toLowerCase() ?? "style"} profile`
                     : `${totalCount} pieces — take the quiz to personalize`}
