@@ -83,43 +83,55 @@ export function ProductCard({
 
   return (
     <article className="sm-card group mb-6 flex cursor-pointer break-inside-avoid flex-col">
-      <div className={`relative ${aspect} overflow-hidden rounded-2xl bg-secondary`}>
+      <div className={`relative ${aspect} overflow-hidden rounded-xl bg-secondary ring-1 ring-white/5`}>
         {product.image_url ? (
           <img
             src={product.image_url}
             alt={product.name}
             loading="lazy"
-            className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]"
+            className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.06]"
           />
         ) : (
           <div className="h-full w-full bg-muted" />
         )}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-60" />
         <button
           aria-label={saved ? "Remove from saved" : "Save"}
           aria-pressed={saved}
           onClick={handleSave}
-          className={`sm-focus absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full backdrop-blur transition-all duration-200 active:scale-90 ${
+          className={`sm-focus absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full backdrop-blur transition-all duration-200 ${
             saved
-              ? "bg-primary text-primary-foreground opacity-100"
-              : "bg-background/70 text-foreground opacity-0 hover:bg-background group-hover:opacity-100 focus-visible:opacity-100"
+              ? "bg-gradient-primary text-white opacity-100 shadow-glow"
+              : "bg-black/40 text-white opacity-0 hover:bg-black/60 group-hover:opacity-100 focus-visible:opacity-100"
           }`}
         >
           <Heart
-            className="h-4 w-4 transition-transform"
+            className={`h-4 w-4 ${popping ? "sm-heart-pop" : ""}`}
             fill={saved ? "currentColor" : "none"}
           />
         </button>
-        {confidence >= 95 ? (
-          <div className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-full bg-gradient-gold px-2.5 py-1 text-[11px] font-semibold text-primary-foreground shadow-glow">
-            <span className="h-1.5 w-1.5 rounded-full bg-primary-foreground/80" />
-            <span className="tabular-nums">{animatedConfidence}%</span> match
-          </div>
-        ) : (
-          <div className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-full bg-background/70 px-2.5 py-1 text-[11px] font-medium text-confidence backdrop-blur">
-            <span className="h-1.5 w-1.5 rounded-full bg-confidence" />
-            <span className="tabular-nums">{animatedConfidence}%</span> match
-          </div>
-        )}
+        {(() => {
+          const high = confidence >= 95;
+          const mid = confidence >= 80 && confidence < 95;
+          const dotColor = high ? "bg-confidence" : mid ? "bg-confidence-mid" : "bg-white/70";
+          const ringColor = high
+            ? "ring-confidence/60 text-confidence"
+            : mid
+              ? "ring-confidence-mid/60 text-confidence-mid"
+              : "ring-white/30 text-white/90";
+          return (
+            <div
+              className={`absolute bottom-3 left-3 flex h-12 w-12 flex-col items-center justify-center rounded-full bg-black/55 backdrop-blur-md ring-2 ${ringColor}`}
+              aria-label={`${confidence}% match`}
+            >
+              <span className="flex items-center gap-1 text-[12px] font-semibold tabular-nums leading-none">
+                <span className={`h-1.5 w-1.5 rounded-full ${dotColor}`} />
+                {animatedConfidence}
+              </span>
+              <span className="mt-0.5 text-[8px] uppercase tracking-wider text-white/70">match</span>
+            </div>
+          );
+        })()}
       </div>
       <div className="mt-4 flex items-start justify-between gap-4">
         <div className="min-w-0">
