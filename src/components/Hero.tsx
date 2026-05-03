@@ -1,22 +1,38 @@
 import { ArrowRight, Sparkles, ListChecks, ShoppingBag, Star } from "lucide-react";
 import heroImg from "@/assets/hero.jpg";
+import { useCountUp } from "@/hooks/useCountUp";
+
+function AnimatedNumber({
+  value,
+  suffix = "",
+  decimals = 0,
+}: {
+  value: number;
+  suffix?: string;
+  decimals?: number;
+}) {
+  const v = useCountUp(value, 2000, true);
+  return (
+    <>
+      {decimals > 0 ? v.toFixed(decimals) : Math.round(v).toLocaleString()}
+      {suffix}
+    </>
+  );
+}
 
 export function Hero({ onStartQuiz }: { onStartQuiz?: () => void }) {
   return (
     <>
       <section className="relative overflow-hidden border-b border-border">
         <div className="absolute inset-0 -z-10">
-          <img
-            src={heroImg}
-            alt=""
+          <div
+            className="sm-parallax absolute inset-0"
+            style={{ backgroundImage: `url(${heroImg})` }}
             aria-hidden="true"
-            className="h-full w-full object-cover object-[center_30%]"
           />
-          {/* Dark overlay for legibility */}
           <div className="absolute inset-0 bg-black/55" />
           <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-background/20" />
           <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background/30" />
-          {/* Subtle blue/purple wash */}
           <div
             className="absolute inset-0 opacity-40 mix-blend-screen"
             style={{ background: "radial-gradient(60% 50% at 30% 40%, rgba(59,130,246,0.25), transparent), radial-gradient(50% 50% at 80% 70%, rgba(168,85,247,0.22), transparent)" }}
@@ -25,22 +41,37 @@ export function Hero({ onStartQuiz }: { onStartQuiz?: () => void }) {
 
         <div className="mx-auto grid min-h-[78vh] max-w-7xl grid-cols-1 items-center gap-12 px-6 py-24 md:px-10 md:py-32 lg:grid-cols-[1.15fr_1fr]">
           <div className="relative z-10">
-            <p className="mb-7 inline-flex items-center gap-2 rounded-full glass px-3 py-1.5 text-[11px] font-medium uppercase tracking-[0.2em] text-muted-foreground">
+            <p
+              className="sm-headline-rise mb-7 inline-flex items-center gap-2 rounded-full glass px-3 py-1.5 text-[11px] font-medium uppercase tracking-[0.2em] text-muted-foreground"
+              style={{ animationDelay: "0ms" }}
+            >
               <span className="h-1.5 w-1.5 rounded-full bg-gradient-primary" />
               AI Stylist · Curated Daily
             </p>
             <h1
-              className="text-foreground"
-              style={{ fontSize: "clamp(2.75rem, 6vw, 4.5rem)", lineHeight: 1.02, letterSpacing: "-0.04em", fontWeight: 600 }}
+              className="sm-headline-rise text-foreground"
+              style={{
+                fontSize: "clamp(2.75rem, 6vw, 4.5rem)",
+                lineHeight: 1.02,
+                letterSpacing: "-0.04em",
+                fontWeight: 600,
+                animationDelay: "120ms",
+              }}
             >
               Discover Your<br />
               <span className="text-gradient italic font-semibold">Signature Style</span>
             </h1>
-            <p className="mt-7 max-w-xl text-lg leading-relaxed text-muted-foreground">
+            <p
+              className="sm-headline-rise mt-7 max-w-xl text-lg leading-relaxed text-muted-foreground"
+              style={{ animationDelay: "240ms" }}
+            >
               AI learns your taste in 60 seconds and curates perfect pieces — no
               noise, just matches you'll actually wear.
             </p>
-            <div className="mt-10 flex flex-wrap items-center gap-4">
+            <div
+              className="sm-headline-rise mt-10 flex flex-wrap items-center gap-4"
+              style={{ animationDelay: "360ms" }}
+            >
               <button
                 onClick={onStartQuiz}
                 className="btn-neon sm-glow group inline-flex h-14 items-center gap-2.5 rounded-2xl px-7 text-[15px] font-semibold"
@@ -58,8 +89,10 @@ export function Hero({ onStartQuiz }: { onStartQuiz?: () => void }) {
               </a>
             </div>
 
-            {/* Trust bar */}
-            <div className="mt-14 flex flex-wrap items-center gap-x-8 gap-y-4 border-t border-border/60 pt-7">
+            <div
+              className="sm-headline-rise mt-14 flex flex-wrap items-center gap-x-8 gap-y-4 border-t border-border/60 pt-7"
+              style={{ animationDelay: "480ms" }}
+            >
               <div className="flex items-center gap-2.5">
                 <div className="flex -space-x-2">
                   {[
@@ -75,7 +108,10 @@ export function Hero({ onStartQuiz }: { onStartQuiz?: () => void }) {
                   ))}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  <span className="font-medium text-foreground">12,000+</span> style lovers
+                  <span className="font-medium text-foreground tabular-nums">
+                    <AnimatedNumber value={12000} />+
+                  </span>{" "}
+                  style lovers
                 </p>
               </div>
               <div className="flex items-center gap-1.5">
@@ -83,16 +119,22 @@ export function Hero({ onStartQuiz }: { onStartQuiz?: () => void }) {
                   <Star key={i} className="h-3.5 w-3.5 fill-primary text-primary" />
                 ))}
                 <span className="ml-1 text-xs text-muted-foreground">
-                  <span className="font-medium text-foreground">4.9</span> · 2,400 reviews
+                  <span className="font-medium text-foreground tabular-nums">
+                    <AnimatedNumber value={4.9} decimals={1} />
+                  </span>{" "}
+                  ·{" "}
+                  <AnimatedNumber value={2400} /> reviews
                 </span>
               </div>
               <p className="text-xs text-muted-foreground">
-                <span className="font-medium text-foreground">98%</span> match accuracy
+                <span className="font-medium text-foreground tabular-nums">
+                  <AnimatedNumber value={98} suffix="%" />
+                </span>{" "}
+                match accuracy
               </p>
             </div>
           </div>
 
-          {/* Floating stat card */}
           <div className="relative z-10 hidden lg:block">
             <div className="ml-auto w-fit rounded-2xl border border-border/60 bg-card/70 p-5 shadow-luxe backdrop-blur-md">
               <div className="flex items-center justify-between gap-8">
@@ -160,7 +202,7 @@ function HowItWorks() {
             return (
               <li
                 key={s.label}
-                className="group relative flex flex-col gap-5 rounded-2xl border border-border bg-background/40 p-7 transition-all hover:-translate-y-1 hover:border-primary/40 hover:shadow-glow"
+                className="group relative flex flex-col gap-5 rounded-2xl border border-border bg-background/40 p-7 transition-all duration-300 ease-out hover:-translate-y-1 hover:border-primary/40 hover:shadow-glow"
               >
                 <div className="flex items-center justify-between">
                   <span className="text-[11px] font-medium uppercase tracking-[0.18em] text-primary">
