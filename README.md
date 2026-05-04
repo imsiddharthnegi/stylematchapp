@@ -2,7 +2,7 @@
 
 <div align="center">
 
-[Live Demo]
+[Live Demo] https://stylematchapp.lovable.app/
 • [Report Bug](https://github.com/imsiddharthnegi/stylematchapp/issues)
 • [Request Feature](https://github.com/imsiddharthnegi/stylematchapp/issues)
 
