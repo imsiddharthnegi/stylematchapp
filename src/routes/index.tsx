@@ -400,8 +400,12 @@ function Dashboard() {
         </section>
 
         <footer className="border-t border-border">
-          <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-10 text-xs text-muted-foreground md:px-10">
+          <div className="mx-auto flex max-w-7xl flex-col gap-4 px-6 py-10 text-xs text-muted-foreground md:flex-row md:items-center md:justify-between md:px-10">
             <p>© {new Date().getFullYear()} StyleMatch</p>
+            <p className="inline-flex items-center gap-1.5">
+              <span className="text-[#FF4A00]">⚡</span>
+              Automated with Zapier · Quiz results logged automatically
+            </p>
             <p>Crafted with care.</p>
           </div>
         </footer>
