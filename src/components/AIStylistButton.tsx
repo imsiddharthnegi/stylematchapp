@@ -9,7 +9,7 @@ type Msg = { role: "user" | "assistant"; content: string };
 const STARTER: Msg = {
   role: "assistant",
   content:
-    "Hi — I'm your stylist. Tell me about an occasion or vibe and I'll help you build the look.",
+    "Hi! I've analyzed 2,400+ style profiles. Tell me what you're looking for — occasion, vibe, or budget — and I'll find your match.",
 };
 
 export function AIStylistButton() {
