@@ -21,6 +21,7 @@ import {
 } from "@/components/FilterSidebar";
 import { generateRecommendationReasons } from "@/server/recommendations.functions";
 import { Sparkles, SlidersHorizontal, X } from "lucide-react";
+import { toast } from "sonner";
 
 const searchSchema = z.object({
   cats: fallback(z.array(z.string()), []).default([]),
