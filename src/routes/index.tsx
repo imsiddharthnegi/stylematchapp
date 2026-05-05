@@ -141,7 +141,7 @@ function Dashboard() {
   const [showEmpty, setShowEmpty] = useState(false);
   const [reasons, setReasons] = useState<Record<string, string>>({});
   const [reasonsLoading, setReasonsLoading] = useState(false);
-  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [justMatched, setJustMatched] = useState(false);
 
   useEffect(() => {
     setPrefs(getSavedPreferences());
