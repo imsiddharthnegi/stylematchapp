@@ -265,7 +265,7 @@ function Dashboard() {
       <main>
         <Hero onStartQuiz={() => setQuizOpen(true)} />
 
-        <section className="mx-auto max-w-7xl px-6 py-16 md:px-10 md:py-20">
+        <section id="trending" className="mx-auto max-w-7xl px-6 py-16 md:px-10 md:py-20">
           <div className="mb-10 flex items-end justify-between gap-6">
             <div>
               <h2 className="text-foreground">
