@@ -341,9 +341,9 @@ function Dashboard() {
 
             <div>
               {items === null ? (
-                <div className="columns-1 gap-6 sm:columns-2 xl:columns-3">
+                <div className="columns-2 gap-4 sm:gap-6 xl:columns-3">
                   {Array.from({ length: 8 }).map((_, i) => (
-                    <div key={i} className="mb-6 flex break-inside-avoid flex-col gap-4">
+                    <div key={i} className="mb-4 flex break-inside-avoid flex-col gap-3 sm:mb-6 sm:gap-4">
                       <div
                         className="sm-shimmer rounded-2xl"
                         style={{ aspectRatio: i % 3 === 0 ? "3/4" : i % 3 === 1 ? "4/5" : "5/6" }}
