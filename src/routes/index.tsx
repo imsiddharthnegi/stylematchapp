@@ -419,6 +419,16 @@ function Dashboard() {
           } catch {
             /* ignore */
           }
+          toast.success("Your Style Profile", {
+            description: "94% match · 8 pieces curated for you",
+          });
+          setJustMatched(true);
+          setTimeout(() => {
+            document
+              .getElementById("trending")
+              ?.scrollIntoView({ behavior: "smooth", block: "start" });
+          }, 150);
+          setTimeout(() => setJustMatched(false), 4000);
         }}
       />
       <AIStylistButton />
