@@ -373,7 +373,7 @@ function Dashboard() {
                   </div>
                 )
               ) : (
-                <div className="columns-1 gap-6 sm:columns-2 xl:columns-3">
+                <div className="columns-2 gap-4 sm:gap-6 xl:columns-3">
                   {items.map((p, i) => (
                     <Link
                       key={p.id}
