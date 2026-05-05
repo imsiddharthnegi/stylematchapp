@@ -346,3 +346,31 @@
     border-radius: 4px;
   }
 }
+
+@layer utilities {
+  @keyframes sm-matched-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--primary) 55%, transparent); }
+    50% { box-shadow: 0 0 0 6px color-mix(in oklab, var(--primary) 0%, transparent); }
+  }
+  .sm-matched {
+    position: relative;
+    border-radius: 1rem;
+    animation: sm-matched-pulse 1.6s ease-out 3;
+    outline: 2px solid color-mix(in oklab, var(--primary) 70%, transparent);
+    outline-offset: 4px;
+  }
+  .sm-matched::after {
+    content: "Matched for you";
+    position: absolute;
+    top: 10px; left: 10px;
+    z-index: 5;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: var(--foreground);
+    color: var(--background);
+  }
+}
