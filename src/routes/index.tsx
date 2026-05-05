@@ -379,7 +379,9 @@ function Dashboard() {
                       key={p.id}
                       to="/products/$productId"
                       params={{ productId: p.id }}
-                      className="sm-card-in block break-inside-avoid"
+                      className={`sm-card-in block break-inside-avoid ${
+                        justMatched && i < 8 ? "sm-matched" : ""
+                      }`}
                       style={{ animationDelay: `${Math.min(i, 12) * 100}ms` }}
                     >
                       <ProductCard
