@@ -21,6 +21,7 @@ import {
 } from "@/components/FilterSidebar";
 import { generateRecommendationReasons } from "@/server/recommendations.functions";
 import { Sparkles, SlidersHorizontal, X } from "lucide-react";
+import { toast } from "sonner";
 
 const searchSchema = z.object({
   cats: fallback(z.array(z.string()), []).default([]),
@@ -141,6 +142,7 @@ function Dashboard() {
   const [reasons, setReasons] = useState<Record<string, string>>({});
   const [reasonsLoading, setReasonsLoading] = useState(false);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [justMatched, setJustMatched] = useState(false);
 
   useEffect(() => {
     setPrefs(getSavedPreferences());
@@ -263,7 +265,7 @@ function Dashboard() {
       <main>
         <Hero onStartQuiz={() => setQuizOpen(true)} />
 
-        <section className="mx-auto max-w-7xl px-6 py-16 md:px-10 md:py-20">
+        <section id="trending" className="mx-auto max-w-7xl px-6 py-16 md:px-10 md:py-20">
           <div className="mb-10 flex items-end justify-between gap-6">
             <div>
               <h2 className="text-foreground">
@@ -377,7 +379,9 @@ function Dashboard() {
                       key={p.id}
                       to="/products/$productId"
                       params={{ productId: p.id }}
-                      className="sm-card-in block break-inside-avoid"
+                      className={`sm-card-in block break-inside-avoid ${
+                        justMatched && i < 8 ? "sm-matched" : ""
+                      }`}
                       style={{ animationDelay: `${Math.min(i, 12) * 100}ms` }}
                     >
                       <ProductCard
@@ -415,6 +419,16 @@ function Dashboard() {
           } catch {
             /* ignore */
           }
+          toast.success("Your Style Profile", {
+            description: "94% match · 8 pieces curated for you",
+          });
+          setJustMatched(true);
+          setTimeout(() => {
+            document
+              .getElementById("trending")
+              ?.scrollIntoView({ behavior: "smooth", block: "start" });
+          }, 150);
+          setTimeout(() => setJustMatched(false), 4000);
         }}
       />
       <AIStylistButton />
