@@ -72,15 +72,25 @@ export function Hero({ onStartQuiz }: { onStartQuiz?: () => void }) {
               className="sm-headline-rise mt-10 flex flex-wrap items-center gap-4"
               style={{ animationDelay: "360ms" }}
             >
-              <button
-                onClick={onStartQuiz}
-                className="btn-neon sm-glow group inline-flex h-14 items-center gap-2.5 rounded-2xl px-7 text-[15px] font-semibold"
-              >
-                <Sparkles className="h-4 w-4" strokeWidth={2} />
-                Start Style Quiz
-                <span className="ml-1 rounded-full bg-white/20 px-2 py-0.5 text-[11px] font-medium">60 sec</span>
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" strokeWidth={2} />
-              </button>
+              <div className="group/tip relative">
+                <button
+                  onClick={onStartQuiz}
+                  className="btn-neon sm-glow group inline-flex h-14 items-center gap-2.5 rounded-2xl px-7 text-[15px] font-semibold"
+                >
+                  <Sparkles className="h-4 w-4" strokeWidth={2} />
+                  Start Style Quiz
+                  <span className="ml-1 rounded-full bg-white/20 px-2 py-0.5 text-[11px] font-medium">60 sec</span>
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" strokeWidth={2} />
+                </button>
+                <span
+                  role="tooltip"
+                  className="pointer-events-none absolute left-1/2 top-full z-20 mt-2 w-max max-w-xs -translate-x-1/2 rounded-md border border-border bg-card px-3 py-2 text-[11px] leading-relaxed text-muted-foreground opacity-0 shadow-luxe transition-opacity duration-200 group-hover/tip:opacity-100"
+                >
+                  <span className="font-medium text-foreground">How your data is used</span>
+                  <br />
+                  Your answers stay local. No account needed.
+                </span>
+              </div>
               <a
                 href="#how-it-works"
                 className="inline-flex h-14 items-center px-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
