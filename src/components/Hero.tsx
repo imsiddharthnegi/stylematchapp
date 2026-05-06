@@ -118,9 +118,7 @@ export function Hero({ onStartQuiz }: { onStartQuiz?: () => void }) {
                   ))}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  <span className="font-medium text-foreground tabular-nums">
-                    <AnimatedNumber value={12000} />+
-                  </span>{" "}
+                  <span className="font-medium text-foreground tabular-nums">2,400+</span>{" "}
                   style lovers
                 </p>
               </div>
@@ -129,17 +127,12 @@ export function Hero({ onStartQuiz }: { onStartQuiz?: () => void }) {
                   <Star key={i} className="h-3.5 w-3.5 fill-primary text-primary" />
                 ))}
                 <span className="ml-1 text-xs text-muted-foreground">
-                  <span className="font-medium text-foreground tabular-nums">
-                    <AnimatedNumber value={4.9} decimals={1} />
-                  </span>{" "}
-                  ·{" "}
-                  <AnimatedNumber value={2400} /> reviews
+                  <span className="font-medium text-foreground tabular-nums">4.8</span>{" "}
+                  · 127 reviews
                 </span>
               </div>
               <p className="text-xs text-muted-foreground">
-                <span className="font-medium text-foreground tabular-nums">
-                  <AnimatedNumber value={98} suffix="%" />
-                </span>{" "}
+                <span className="font-medium text-foreground tabular-nums">94%</span>{" "}
                 match accuracy
               </p>
             </div>
