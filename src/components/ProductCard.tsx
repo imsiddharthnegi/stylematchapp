@@ -2,7 +2,6 @@ import { Heart, Star } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useSavedItems } from "@/hooks/useSavedItems";
-import { useCountUp, useInView } from "@/hooks/useCountUp";
 
 export type Product = {
   id: string;
@@ -17,71 +16,15 @@ export type Product = {
   brand?: string | null;
 };
 
-function ConfidenceRing({ value, animate }: { value: number; animate: boolean }) {
-  const animated = useCountUp(value, 1200, animate);
-  const size = 52;
-  const stroke = 4;
-  const r = (size - stroke) / 2;
-  const c = 2 * Math.PI * r;
-  const high = value >= 95;
-  const mid = value >= 80 && value < 95;
-  const color = high
-    ? "var(--confidence)"
-    : mid
-      ? "var(--confidence-mid)"
-      : "var(--primary)";
-  const offset = c - (animated / 100) * c;
-  return (
-    <div
-      className="absolute bottom-3 left-3 flex items-center justify-center rounded-full bg-black/55 backdrop-blur-md"
-      style={{ width: size, height: size }}
-      aria-label={`${value}% match`}
-    >
-      <svg width={size} height={size} className="absolute inset-0 -rotate-90">
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={r}
-          stroke="rgba(255,255,255,0.12)"
-          strokeWidth={stroke}
-          fill="none"
-        />
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={r}
-          stroke={color}
-          strokeWidth={stroke}
-          fill="none"
-          strokeLinecap="round"
-          strokeDasharray={c}
-          strokeDashoffset={offset}
-          style={{ transition: "stroke-dashoffset 80ms linear", filter: `drop-shadow(0 0 6px ${color})` }}
-        />
-      </svg>
-      <div className="flex flex-col items-center leading-none" style={{ color }}>
-        <span className="text-[12px] font-semibold tabular-nums">
-          {Math.round(animated)}
-        </span>
-        <span className="mt-0.5 text-[7px] uppercase tracking-wider opacity-80">
-          match
-        </span>
-      </div>
-    </div>
-  );
-}
-
 export function ProductCard({
   product,
   reason,
-  reasonLoading,
 }: {
   product: Product;
   reason?: string;
   reasonLoading?: boolean;
 }) {
   const confidence = product.confidence ?? Math.round(78 + Math.random() * 20);
-  const { ref, inView } = useInView<HTMLElement>();
   const { isSaved, toggle } = useSavedItems();
   const saved = isSaved(product.id);
   const [popping, setPopping] = useState(false);
@@ -93,43 +36,33 @@ export function ProductCard({
     setPopping(true);
     setTimeout(() => setPopping(false), 480);
     await toggle(product.id);
-    if (wasSaved) {
-      toast("Removed", { description: product.name });
-    } else {
-      toast.success("Saved", { description: product.name });
-    }
+    if (wasSaved) toast("Removed", { description: product.name });
+    else toast.success("Saved", { description: product.name });
   };
 
-  const aspectVariants = ["aspect-[4/5]", "aspect-[3/4]", "aspect-[4/6]", "aspect-[5/6]"];
-  const aspect = aspectVariants[product.id.charCodeAt(0) % aspectVariants.length];
-
   return (
-    <article
-      ref={ref}
-      className={`sm-card-3d group mb-6 flex cursor-pointer break-inside-avoid flex-col ${
-        inView ? "sm-reveal-in" : "sm-reveal-pre"
-      }`}
-    >
-      <div className={`relative ${aspect} overflow-hidden rounded-xl bg-secondary ring-1 ring-white/5`}>
+    <article className="group flex h-full cursor-pointer flex-col overflow-hidden rounded-xl border border-border bg-card transition-all duration-300 hover:-translate-y-0.5 hover:border-foreground/20 hover:shadow-lg">
+      <div className="relative h-[280px] w-full overflow-hidden bg-secondary">
         {product.image_url ? (
           <img
             src={product.image_url}
             alt={product.name}
             loading="lazy"
-            className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.15]"
+            className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
           />
         ) : (
           <div className="h-full w-full bg-muted" />
         )}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-60" />
+
+        {/* Save button - hover only */}
         <button
           aria-label={saved ? "Remove from saved" : "Save"}
           aria-pressed={saved}
           onClick={handleSave}
-          className={`sm-focus absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full backdrop-blur transition-all duration-300 ease-out ${
+          className={`absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-black/55 text-white backdrop-blur-md transition-all duration-300 ease-out hover:bg-black/75 ${
             saved
-              ? "bg-gradient-primary text-white opacity-100 shadow-glow"
-              : "bg-black/40 text-white opacity-0 hover:bg-black/60 group-hover:opacity-100 focus-visible:opacity-100"
+              ? "opacity-100"
+              : "opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
           }`}
         >
           <Heart
@@ -137,44 +70,51 @@ export function ProductCard({
             fill={saved ? "currentColor" : "none"}
           />
         </button>
-      </div>
-      <div className="mt-4 flex items-start justify-between gap-4">
-        <div className="min-w-0">
-          <p className="text-[11px] uppercase tracking-wider text-muted-foreground">
-            {product.brand ?? product.category ?? "Apparel"}
-          </p>
-          <h3 className="mt-1 truncate text-[15px] font-medium text-foreground transition-colors group-hover:text-primary">
-            {product.name}
-          </h3>
-          {product.rating != null && (
-            <div className="mt-1 flex items-center gap-1 text-[11px] text-muted-foreground">
-              <Star className="h-3 w-3 fill-primary text-primary" />
-              <span className="tabular-nums">{product.rating.toFixed(1)}</span>
-              <span className="ml-2 inline-flex items-center rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold text-emerald-400">
-                {confidence}% match
-              </span>
-            </div>
-          )}
-        </div>
-        <p className="shrink-0 text-[15px] font-medium tabular-nums text-foreground">
-          ${product.price.toFixed(0)}
-        </p>
+
+        {/* "Why this matches you" overlay - slides up on hover */}
+        {reason && (
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 translate-y-full bg-gradient-to-t from-black/90 via-black/75 to-transparent p-4 text-[12px] leading-snug text-white transition-transform duration-300 ease-out group-hover:translate-y-0">
+            <p className="font-medium text-emerald-400">✦ Why this matches you</p>
+            <p className="mt-1 text-white/90">{reason}</p>
+          </div>
+        )}
       </div>
 
-      {(reasonLoading || reason) && (
-        <div className="mt-3 min-h-[1.5rem]">
-          {reasonLoading ? (
-            <div className="flex flex-wrap gap-1.5">
-              <span className="sm-shimmer h-5 w-32 rounded-full" />
-              <span className="sm-shimmer h-5 w-20 rounded-full" />
-            </div>
-          ) : reason ? (
-            <span title={reason} className="inline-block animate-[sm-fade-in_0.4s_ease-out_both] rounded-full border border-border bg-card/60 px-3 py-1 text-[11px] leading-snug text-muted-foreground">
-              ✦ Why this matches you: {reason}
-            </span>
-          ) : null}
+      <div className="flex flex-1 flex-col gap-2 p-4">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0 flex-1">
+            <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+              {product.category ?? "Apparel"}
+            </p>
+            <h3 className="mt-1 truncate text-[15px] font-semibold text-foreground">
+              {product.name}
+            </h3>
+            {product.brand && (
+              <p className="truncate text-[12px] text-muted-foreground">
+                {product.brand}
+              </p>
+            )}
+          </div>
+          <p className="shrink-0 text-[15px] font-semibold tabular-nums text-foreground">
+            ${product.price.toFixed(0)}
+          </p>
         </div>
-      )}
+
+        <div className="mt-auto flex items-center justify-between gap-2 pt-1">
+          <div className="flex items-center gap-1 text-[12px] text-muted-foreground">
+            <Star className="h-3.5 w-3.5 fill-foreground text-foreground" />
+            <span className="tabular-nums">
+              {(product.rating ?? 4.5).toFixed(1)}
+            </span>
+          </div>
+          <span
+            className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold text-white"
+            style={{ backgroundColor: "#10b981" }}
+          >
+            {confidence}% match
+          </span>
+        </div>
+      </div>
     </article>
   );
 }
