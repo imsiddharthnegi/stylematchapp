@@ -378,27 +378,36 @@ function Dashboard() {
                   </div>
                 )
               ) : (
-                <div className="columns-2 gap-4 sm:gap-6 xl:columns-3">
-                  {items.map((p, i) => (
-                    <Link
-                      key={p.id}
-                      to="/products/$productId"
-                      params={{ productId: p.id }}
-                      className={`sm-card-in mb-4 block break-inside-avoid sm:mb-6 ${
-                        justMatched && i < 8 ? "sm-matched" : ""
-                      }`}
-                      style={{ animationDelay: `${Math.min(i, 12) * 100}ms` }}
-                    >
-                      <ProductCard
-                        product={p}
-                        reason={reasons[p.id] ?? (p as { reason?: string }).reason}
-                        reasonLoading={
-                          !!prefs && i < 6 && reasonsLoading && !reasons[p.id]
-                        }
-                      />
-                    </Link>
-                  ))}
-                </div>
+                <>
+                  <div className="grid grid-cols-2 gap-4 p-6 md:grid-cols-3">
+                    {items.slice(0, visibleCount).map((p, i) => (
+                      <Link
+                        key={p.id}
+                        to="/products/$productId"
+                        params={{ productId: p.id }}
+                        className={`sm-card-in block h-full ${
+                          justMatched && i < 9 ? "sm-matched" : ""
+                        }`}
+                        style={{ animationDelay: `${Math.min(i, 12) * 80}ms` }}
+                      >
+                        <ProductCard
+                          product={p}
+                          reason={reasons[p.id] ?? (p as { reason?: string }).reason}
+                        />
+                      </Link>
+                    ))}
+                  </div>
+                  {visibleCount < items.length && (
+                    <div className="mt-8 flex justify-center">
+                      <button
+                        onClick={() => setVisibleCount((v) => v + 9)}
+                        className="inline-flex h-11 items-center gap-2 rounded-full border border-border bg-card px-6 text-sm font-semibold text-foreground transition-all hover:border-foreground hover:shadow-md"
+                      >
+                        Load more
+                      </button>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </div>
