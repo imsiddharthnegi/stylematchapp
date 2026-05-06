@@ -135,7 +135,7 @@ function Dashboard() {
     });
   };
 
-  const [products, setProducts] = useState<Product[] | null>(null);
+  const [products, setProducts] = useState<Product[] | null>(FALLBACK_PRODUCTS);
   const [prefs, setPrefs] = useState<StylePreferences | null>(null);
   const [quizOpen, setQuizOpen] = useState(false);
   const [showEmpty, setShowEmpty] = useState(false);
