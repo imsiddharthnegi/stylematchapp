@@ -151,7 +151,10 @@ function Dashboard() {
       .from("products")
       .select("id,name,price,image_url,category,rating,tags,created_at")
       .order("created_at", { ascending: false })
-      .then(({ data }) => setProducts((data as Product[]) ?? []));
+      .then(({ data }) => {
+        const rows = (data as Product[]) ?? [];
+        if (rows.length > 0) setProducts(rows);
+      });
   }, []);
 
   const personalized = useMemo<Product[] | null>(() => {
