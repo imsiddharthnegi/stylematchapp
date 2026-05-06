@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
+import { FALLBACK_PRODUCTS } from "@/data/fallbackProducts";
 import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
 import { ProductCard, type Product } from "@/components/ProductCard";
