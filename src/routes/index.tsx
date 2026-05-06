@@ -390,7 +390,7 @@ function Dashboard() {
                     >
                       <ProductCard
                         product={p}
-                        reason={reasons[p.id]}
+                        reason={reasons[p.id] ?? (p as { reason?: string }).reason}
                         reasonLoading={
                           !!prefs && i < 6 && reasonsLoading && !reasons[p.id]
                         }
