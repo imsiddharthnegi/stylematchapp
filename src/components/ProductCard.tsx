@@ -1,4 +1,4 @@
-import { Heart } from "lucide-react";
+import { Heart, Star } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useSavedItems } from "@/hooks/useSavedItems";
