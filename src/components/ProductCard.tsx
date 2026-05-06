@@ -14,6 +14,7 @@ export type Product = {
   tags?: string[] | null;
   created_at?: string | null;
   confidence?: number;
+  brand?: string | null;
 };
 
 function ConfidenceRing({ value, animate }: { value: number; animate: boolean }) {
