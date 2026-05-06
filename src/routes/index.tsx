@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
+import { FALLBACK_PRODUCTS } from "@/data/fallbackProducts";
 import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
 import { ProductCard, type Product } from "@/components/ProductCard";
@@ -135,7 +136,7 @@ function Dashboard() {
     });
   };
 
-  const [products, setProducts] = useState<Product[] | null>(null);
+  const [products, setProducts] = useState<Product[] | null>(FALLBACK_PRODUCTS);
   const [prefs, setPrefs] = useState<StylePreferences | null>(null);
   const [quizOpen, setQuizOpen] = useState(false);
   const [showEmpty, setShowEmpty] = useState(false);
@@ -150,7 +151,10 @@ function Dashboard() {
       .from("products")
       .select("id,name,price,image_url,category,rating,tags,created_at")
       .order("created_at", { ascending: false })
-      .then(({ data }) => setProducts((data as Product[]) ?? []));
+      .then(({ data }) => {
+        const rows = (data as Product[]) ?? [];
+        if (rows.length > 0) setProducts(rows);
+      });
   }, []);
 
   const personalized = useMemo<Product[] | null>(() => {
@@ -386,7 +390,7 @@ function Dashboard() {
                     >
                       <ProductCard
                         product={p}
-                        reason={reasons[p.id]}
+                        reason={reasons[p.id] ?? (p as { reason?: string }).reason}
                         reasonLoading={
                           !!prefs && i < 6 && reasonsLoading && !reasons[p.id]
                         }
