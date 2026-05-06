@@ -144,6 +144,7 @@ function Dashboard() {
   const [reasonsLoading, setReasonsLoading] = useState(false);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [justMatched, setJustMatched] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(9);
 
   useEffect(() => {
     setPrefs(getSavedPreferences());
