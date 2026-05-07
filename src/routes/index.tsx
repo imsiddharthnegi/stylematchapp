@@ -379,7 +379,7 @@ function Dashboard() {
                 )
               ) : (
                 <>
-                  <div className="grid grid-cols-2 gap-4 p-6 md:grid-cols-3">
+                  <div className="grid grid-cols-2 gap-5 md:grid-cols-3 md:gap-6">
                     {items.slice(0, visibleCount).map((p, i) => (
                       <Link
                         key={p.id}
@@ -388,7 +388,7 @@ function Dashboard() {
                         className={`sm-card-in block h-full ${
                           justMatched && i < 9 ? "sm-matched" : ""
                         }`}
-                        style={{ animationDelay: `${Math.min(i, 12) * 80}ms` }}
+                        style={{ animationDelay: `${Math.min(i, 12) * 70}ms` }}
                       >
                         <ProductCard
                           product={p}
@@ -398,12 +398,16 @@ function Dashboard() {
                     ))}
                   </div>
                   {visibleCount < items.length && (
-                    <div className="mt-8 flex justify-center">
+                    <div className="mt-12 flex flex-col items-center gap-3">
+                      <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                        Showing {visibleCount} of {items.length}
+                      </p>
                       <button
                         onClick={() => setVisibleCount((v) => v + 9)}
-                        className="inline-flex h-11 items-center gap-2 rounded-full border border-border bg-card px-6 text-sm font-semibold text-foreground transition-all hover:border-foreground hover:shadow-md"
+                        className="group inline-flex h-12 items-center gap-2 rounded-full border border-border bg-card/60 px-7 text-sm font-semibold text-foreground backdrop-blur-md transition-all duration-300 hover:border-primary/50 hover:bg-card hover:shadow-[0_8px_30px_-8px_color-mix(in_oklab,var(--primary)_45%,transparent)]"
                       >
                         Load more
+                        <span className="transition-transform group-hover:translate-y-0.5">↓</span>
                       </button>
                     </div>
                   )}
