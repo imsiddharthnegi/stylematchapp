@@ -271,17 +271,19 @@ function Dashboard() {
         <Hero onStartQuiz={() => setQuizOpen(true)} />
 
         <section id="trending" className="mx-auto max-w-7xl px-6 py-16 md:px-10 md:py-20">
-          <div className="mb-10 flex items-end justify-between gap-6">
+          <div className="mb-10 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div>
+              <p className="mb-3 inline-flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.22em] text-primary">
+                <span className="h-px w-8 bg-primary/60" />
+                {prefs ? "Personalized edit" : "Discover"}
+              </p>
               <h2 className="text-foreground">
                 {prefs ? "Curated for you" : "Trending now"}
               </h2>
               <p className="mt-2 text-sm text-muted-foreground">
-                {items === null
-                  ? "Curating your feed…"
-                  : prefs
-                    ? `${totalCount} pieces matched to your ${prefs.vibe?.toLowerCase() ?? "style"} profile`
-                    : `${totalCount} pieces — take the quiz to personalize`}
+                {prefs
+                  ? `${totalCount} pieces matched to your ${prefs.vibe?.toLowerCase() ?? "style"} profile`
+                  : `${totalCount} pieces — take the quiz to personalize`}
               </p>
             </div>
             <div className="flex items-center gap-2">
